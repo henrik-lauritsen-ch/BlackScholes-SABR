@@ -19,14 +19,16 @@ import VolatilitySurface as vs
 import Utility as u
 
 # Volatility Smile
-vol_smile = np.array([0.09852, 0.09542, 0.0973, 0.10582, 0.11732])
+vol_smile = np.array([0.13852, 0.10042, 0.0973, 0.11582, 0.20732])
 
 # Strike from Delta points
-sfd = vs.StrikeFromDelta(10.3719, 0.00565, 0.01822, 71.0/365.0)
+sfd = vs.StrikeFromDelta(10.3719, 0.00565, 0.01822, 14.0/365.0)
 strike_vec = sfd.GetStrikeVector(vol_smile)
 
+print(strike_vec)
+
 # BlackScholes Option object
-bs_option = bs.Vanilla(10.3719, 10.3719, 71/365.0, 0.00565, 0.01822, 0.0973)
+bs_option = bs.Vanilla(10.3719, 10.360169, 71/365.0, 0.00565, 0.01822, 0.0973)
 
 option_price_vec = np.zeros(5)
 for i in range(5):
@@ -36,21 +38,24 @@ for i in range(5):
 
 
 
-plot_strikes = np.linspace(9.75, 11.25, 30)
+plot_strikes = np.linspace(9.8, 11.0, 60)
 plot_vol = np.zeros(30)
 dt = pd.DataFrame(plot_strikes, columns=['Strikes'])
-dt['Vol_Smile'] = dt.apply(lambda row: u.CubicSplineInterpolation(row['Strikes'], strike_vec, vol_smile), axis=1)
+dt['CS_Vol_Smile'] = dt.apply(lambda row: u.Interpolation().CubicSplineInterpolation(row['Strikes'], strike_vec, vol_smile), axis=1)
+dt['PL_Vol_Smile'] = dt.apply(lambda row: u.Interpolation().PiecewiseLinearInterpolation(row['Strikes'], strike_vec, vol_smile, False), axis=1)
 
 for index, i in dt.iterrows():    
     bs_option._strike = dt.loc[index, 'Strikes']
-    dt.loc[index, 'OptionPrice'] = bs_option.GetBaseOptionValue(bs.OptionType.Call, dt.loc[index, 'Vol_Smile'])
+    dt.loc[index, 'OptionPrice'] = bs_option.GetBaseOptionValue(bs.OptionType.Call, dt.loc[index, 'CS_Vol_Smile'])
+    dt.loc[index, 'PL_OptionPrice'] = bs_option.GetBaseOptionValue(bs.OptionType.Call, dt.loc[index, 'PL_Vol_Smile'])
     dt.loc[index, 'InnerValue'] = max(bs_option._spot - bs_option._strike, 0)
 
 fig = plt.figure(figsize=(11, 9.5))
 fig.subplots_adjust(hspace=0.275)
 
 ax =fig.add_subplot(211)
-ax.plot(dt['Strikes'], dt['Vol_Smile'], label = 'Cubic Spline Smile')
+ax.plot(dt['Strikes'], dt['CS_Vol_Smile'], label = 'Cubic Spline Smile')
+ax.plot(dt['Strikes'], dt['PL_Vol_Smile'], label = 'Piecewise Linear Smile')
 ax.scatter(strike_vec, vol_smile, facecolor = 'orange', linewidth=2.1, label = 'Quoted Smile')
 ax.set_title('Vol-Smile for EURNOK')
 ax.set_xlabel('Strike')
@@ -61,7 +66,8 @@ ax.grid(True)
 
 ax = fig.add_subplot(212)
 ax.plot(dt['Strikes'], dt['OptionPrice'], label = 'Cubic Spline Prices')
-ax.plot(dt['Strikes'], dt['InnerValue'], label = 'Option: Inner Value')
+ax.plot(dt['Strikes'], dt['PL_OptionPrice'], label = 'Piecewise Linear Prices')
+# ax.plot(dt['Strikes'], dt['InnerValue'], label = 'Option: Inner Value')
 ax.scatter(strike_vec, option_price_vec, color='orange', linewidth=2.1, label='Quoted Prices')
 ax.set_title('Option Price for EURNOK Call option along the volatility smile')
 ax.set_xlabel('Strike')
