@@ -59,6 +59,19 @@ Methods:
 ## VolatilitySurface.py
 **Classes/Methods:**
 
+```
+class StrikeFromDelta:
+
+- GetATMStrike(self, volatility)
+- GetStrikeFromDomesticDelta(self, delta, optiontype: bs.OptionType, volatility)
+- GetStrikeVector(self, volSmile)
+```
+
+```
+Method:
+
+- ForwardContinuousDeposit(spot, domesticDeposit, foreignDeposit, expiryTerm)
+```
 
 ## SABR.py
 **Classes/Methods:**
