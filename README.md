@@ -65,6 +65,7 @@ class StrikeFromDelta:
 - GetATMStrike(self, volatility)
 - GetStrikeFromDomesticDelta(self, delta, optiontype: bs.OptionType, volatility)
 - GetStrikeVector(self, volSmile)
+- GetLogMoneynessStrikeVector(self, volSmile)
 ```
 
 ```
