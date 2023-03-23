@@ -49,9 +49,12 @@ class Interpolation:
 - CubicSplineInterpolation()
 ```
 
+```
 Methods:
+
 - FindIndex()
 - Bisection()
+```
 
 ## VolatilitySurface.py
 **Classes/Methods:**
