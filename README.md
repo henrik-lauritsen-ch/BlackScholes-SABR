@@ -68,7 +68,7 @@ class StrikeFromDelta:
 ```
 
 ```
-Method:
+Methods:
 
 - ForwardContinuousDeposit(spot, domesticDeposit, foreignDeposit, expiryTerm)
 ```
