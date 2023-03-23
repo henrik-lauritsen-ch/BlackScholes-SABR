@@ -84,9 +84,9 @@ class norm:
             else:
                 tmp = 46 * (x - 0.5) / 3.1
                 if (tmp > 0):
-                    n = (int)(math.ceil(tmp)) + 9
+                    n = int(math.ceil(tmp)) + 9
                 else:
-                    n = (int)(math.ceil(tmp)) + 9
+                    n = int(math.ceil(tmp)) + 9
 
             # int N=(x<0.5) ? 9:((int)(ceil(46*(x-0.5)/3.1)+9))
             i = 1
@@ -256,85 +256,150 @@ class norm:
         return r
 
 
-def CubicSplineInterpolation(x, xs, ys):
-    # Method taken from Numerical Recipes in C
-    # http://phys.uri.edu/nigh/NumRec/bookfpdf/f3-3.pdf
-    y2s = spline(xs, ys)
-    return splint(x, xs, ys, y2s)
-     
+def FindIndex(x, data):
+    """     Given Container data[num_cols], and given a value x, a value index
+    is returned such that x is between data[index] and data[index+1]. data must
+    be monotonic, either increasing or decreasing. index = -1 or index = num_cols
+    is returned to indicate that x is out of range
+    """
+    num_cols = len(data)
+    klo = 0
+    khi = num_cols-1
 
-def spline(xs, ys, yp1=0.99e31, ypn=0.99e31):
-
-    numberOfX = len(xs)             
-    u = np.zeros(numberOfX - 1)
-    y2 = np.zeros(numberOfX)
-    
-    if (yp1 > 0.99e30):
-        y2[0], u[0] = 0.0, 0.0
+    if (x < data[0]):
+        index = -1
+    elif (x > data[num_cols-1]):
+        index = num_cols
     else:
-        y2[0] = -0.5
-        u[0] = (3.0 / (xs[1] - xs[0])) * ((ys[1] - ys[0]) / (xs[1] - xs[0]) - yp1)
-    
-    for i in range(1, numberOfX-1, 1):
-    
-        sig = (xs[i] - xs[i - 1]) / (xs[i + 1] - xs[i - 1])
-        p = sig * y2[i - 1] + 2.0
-        y2[i] = (sig - 1.0) / p
-        u[i] = (ys[i + 1] - ys[i]) / (xs[i + 1] - xs[i]) - (ys[i] - ys[i - 1]) / (xs[i] - xs[i - 1])
-        u[i] = (6.0 * u[i] / (xs[i + 1] - xs[i - 1]) - sig * u[i - 1]) / p
-    
-    
-    if (ypn > 0.99e30):
-        qn, un = 0.0, 0.0
-    else:
-        qn = 0.5
-        un = (3.0 / (xs[numberOfX - 1] - xs[numberOfX - 2])) * (ypn - (ys[numberOfX - 1] - ys[numberOfX - 2]) / (xs[numberOfX - 1] - xs[numberOfX - 2]))
-    
-    y2[numberOfX - 1] = (un - qn * u[numberOfX - 2]) / (qn * y2[numberOfX - 2] + 1.0)
-    
-    for k in range(numberOfX - 2, -1, -1):
-        y2[k] = y2[k] * y2[k + 1] + u[k]
-    
-    return y2    
+        while(khi - klo > 1):
 
-
-def splint(x, xs, ys, y2s):
-
-    y = 0
-    numberofx = len(xs)
-
-    if (x <= xs[0]):
-        
-        alpha = (ys[1] - ys[0]) / (xs[1] - xs[0]) - 1.0 / 6.0 * (xs[1] - xs[0]) * (2.0 * y2s[0] + y2s[1])
-        y = ys[0] + alpha * (x - xs[0])
-    
-    elif (x >= xs[numberofx - 1]):
-    
-        alpha = ((ys[numberofx - 1] - ys[numberofx - 2]) / (xs[numberofx - 1] - xs[numberofx - 2]) +
-                        1.0 / 6.0 * (xs[numberofx - 1] - xs[numberofx - 2]) * (y2s[numberofx - 2] + 2 * y2s[numberofx - 1]))
-        y = ys[numberofx - 1] + alpha * (x - xs[numberofx - 1])
-    
-    else:    
-        klo = 0
-        khi = numberofx - 1
-        while (khi - klo > 1):
-        
-            k = int((khi + klo) / 2)
-            if (xs[k] > x):
+            k = int((khi+klo)/2)
+            if (data[k] > x):
                 khi = k
             else:
                 klo = k
+		
+        index = klo
+	
+    return index
+
+
+class Interpolation:
+    
+    def __init__(self) -> None:
+        pass
+    
+    
+    def LinearInterpolation(self, x, x1, x2, y1, y2):
+
+        if (x2 - x1 != 0):
+            y = y1 + (y2 - y1)/(x2 - x1)*(x - x1)
+        else:
+            y = y1
+
+        return y
+
+
+    def PiecewiseLinearInterpolation(self, x, xs, ys, flatExtrapolation=True):
+        
+        nx = len(xs)
+        
+        if (x<xs[0]):
+            if (flatExtrapolation==True):
+                y = ys[0]
+            else:
+                y = self.LinearInterpolation(x, xs[0], xs[1], ys[0], ys[1])
+        elif (x>xs[nx - 1]):
+            if (flatExtrapolation==True):
+                y = ys[nx - 1]
+            else:
+                y = self.LinearInterpolation(x, xs[nx - 2], xs[nx - 1], ys[nx - 2], ys[nx - 1])
+        else:
+             i = FindIndex(x, xs)                
+             y = self.LinearInterpolation(x, xs[i], xs[i+1], ys[i], ys[i+1])        
+        
+        return y
+
+
+    def CubicSplineInterpolation(self, x, xs, ys):
+        # Method taken from Numerical Recipes in C
+        # http://phys.uri.edu/nigh/NumRec/bookfpdf/f3-3.pdf
+        y2s = self.spline(xs, ys)
+        return self.splint(x, xs, ys, y2s)
         
 
-        h = xs[khi] - xs[klo]
-        if (h == 0.0):        
-            raise ValueError("xs[i]!=xs[j] for all i,j where i!=j")
+    def spline(self, xs, ys, yp1=0.99e31, ypn=0.99e31):
+
+        numberOfX = len(xs)             
+        u = np.zeros(numberOfX - 1)
+        y2 = np.zeros(numberOfX)
         
-        a = (xs[khi] - x) / h
-        b = (x - xs[klo]) / h
-        y = a * ys[klo] + b * ys[khi] + ((a * a * a - a) * y2s[klo] + (b * b * b - b) * y2s[khi]) * (h * h) / 6.0
-    
-    return y
+        if (yp1 > 0.99e30):
+            y2[0], u[0] = 0.0, 0.0
+        else:
+            y2[0] = -0.5
+            u[0] = (3.0 / (xs[1] - xs[0])) * ((ys[1] - ys[0]) / (xs[1] - xs[0]) - yp1)
+        
+        for i in range(1, numberOfX-1, 1):
+        
+            sig = (xs[i] - xs[i - 1]) / (xs[i + 1] - xs[i - 1])
+            p = sig * y2[i - 1] + 2.0
+            y2[i] = (sig - 1.0) / p
+            u[i] = (ys[i + 1] - ys[i]) / (xs[i + 1] - xs[i]) - (ys[i] - ys[i - 1]) / (xs[i] - xs[i - 1])
+            u[i] = (6.0 * u[i] / (xs[i + 1] - xs[i - 1]) - sig * u[i - 1]) / p
+        
+        
+        if (ypn > 0.99e30):
+            qn, un = 0.0, 0.0
+        else:
+            qn = 0.5
+            un = (3.0 / (xs[numberOfX - 1] - xs[numberOfX - 2])) * (ypn - (ys[numberOfX - 1] - ys[numberOfX - 2]) / (xs[numberOfX - 1] - xs[numberOfX - 2]))
+        
+        y2[numberOfX - 1] = (un - qn * u[numberOfX - 2]) / (qn * y2[numberOfX - 2] + 1.0)
+        
+        for k in range(numberOfX - 2, -1, -1):
+            y2[k] = y2[k] * y2[k + 1] + u[k]
+        
+        return y2    
+
+
+    def splint(self, x, xs, ys, y2s):
+
+        y = 0
+        numberofx = len(xs)
+
+        if (x <= xs[0]):
+            
+            alpha = (ys[1] - ys[0]) / (xs[1] - xs[0]) - 1.0 / 6.0 * (xs[1] - xs[0]) * (2.0 * y2s[0] + y2s[1])
+            y = ys[0] + alpha * (x - xs[0])
+        
+        elif (x >= xs[numberofx - 1]):
+        
+            alpha = ((ys[numberofx - 1] - ys[numberofx - 2]) / (xs[numberofx - 1] - xs[numberofx - 2]) +
+                            1.0 / 6.0 * (xs[numberofx - 1] - xs[numberofx - 2]) * (y2s[numberofx - 2] + 2 * y2s[numberofx - 1]))
+            y = ys[numberofx - 1] + alpha * (x - xs[numberofx - 1])
+        
+        else:    
+            klo = 0
+            khi = numberofx - 1
+            while (khi - klo > 1):
+            
+                k = int((khi + klo) / 2)
+                if (xs[k] > x):
+                    khi = k
+                else:
+                    klo = k
+            
+
+            h = xs[khi] - xs[klo]
+            if (h == 0.0):        
+                raise ValueError("xs[i]!=xs[j] for all i,j where i!=j")
+            
+            a = (xs[khi] - x) / h
+            b = (x - xs[klo]) / h
+            y = a * ys[klo] + b * ys[khi] + ((a * a * a - a) * y2s[klo] + (b * b * b - b) * y2s[khi]) * (h * h) / 6.0
+        
+        return y
 
 
 
@@ -363,10 +428,17 @@ class Test_Utility(unittest.TestCase):
         xs = np.array([9.796265875871027, 10.067098505250692, 10.356101824110898, 10.687697656702378, 11.069582777590423])
         ys = np.array([0.09852,	0.09542, 0.0973, 0.10582, 0.11732])
             # Interpolation between 2 points
-        self.assertEqual(round(CubicSplineInterpolation(10.7, xs, ys), 12), round(0.106188572556555, 12))
+        self.assertEqual(round(Interpolation().CubicSplineInterpolation(10.7, xs, ys), 12), round(0.106188572556555, 12))
             # Linear extrapolation above right end point
-        self.assertEqual(round(CubicSplineInterpolation(11.9, xs, ys), 12), round(0.14239424307285, 12))
+        self.assertEqual(round(Interpolation().CubicSplineInterpolation(11.9, xs, ys), 12), round(0.14239424307285, 12))
 
+    def test_PieceviseLinear(self):
+        xa = np.array([2, 4.1, 7.3331, 9.998])
+        ya = np.array([10, 7, 5.6, 11.1])
+        self.assertEqual(Interpolation().PiecewiseLinearInterpolation(1.1, xa, ya, True), 10)
+        self.assertEqual(round(Interpolation().PiecewiseLinearInterpolation(3.1, xa, ya, True), 14), 8.42857142857143)
+        self.assertEqual(round(Interpolation().PiecewiseLinearInterpolation(7.2, xa, ya, True), 14), 5.65763508706814)
+        self.assertEqual(round(Interpolation().PiecewiseLinearInterpolation(21.1, xa, ya, False), 13), 34.0130548988705)
 
 if __name__ == '__main__':
     unittest.main()
