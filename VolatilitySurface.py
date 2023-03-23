@@ -76,6 +76,18 @@ class StrikeFromDelta:
         return retval
 
 
+    def GetLogMoneynessStrikeVector(self, volSmile):
+        
+        strike_vec = self.GetStrikeVector(volSmile)
+        atm_strike = self.GetATMStrike(volSmile[2])
+        moneyness_vec = np.zeros(5)
+        
+        for i in range(5):
+            moneyness_vec[i] = math.log(strike_vec[i]/atm_strike)
+        
+        return moneyness_vec
+
+
 
 #//     Unit-Test: Volatility Surface
 class Test_VolSurface(unittest.TestCase):
