@@ -2,9 +2,6 @@
 Functionality to value FX options under Garman Kohlhagen and SABR
 
 
-# BlackScholes - SABR
-Option Pricing Methods for FX Vanilla Options
-
 ## BlackScholes.py
 **Classes:**
 ```
