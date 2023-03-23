@@ -37,8 +37,8 @@ class norm:
 - cdf(), standard normal cumulative distribution function
 - cdfM(), standard normal cumulative distribution function (method M)
 - cdfI(), standard normal cumulative distribution function (method I)
-- InverseCdf(), inverse normal P. J. Acklam.
-- Moro(), inverse normal Moro
+- InverseCdf(), inverse normal, P. J. Acklam.
+- Moro(), inverse normal, Moro
 ```
 
 ```
