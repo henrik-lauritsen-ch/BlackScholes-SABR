@@ -74,7 +74,7 @@ class StrikeFromDelta:
         retval[4] = self.GetStrikeFromDomesticDelta(0.1, bs.OptionType.Call, volSmile[4])
 
         return retval
-
+ 
 
     def GetLogMoneynessStrikeVector(self, volSmile):
         
