@@ -22,8 +22,8 @@ class Vanilla:
 ```
 class OptionType(enum.Enum):
 ```
-- Call
 - Put
+- Call
 
 ## Utility.py
 **Classes/Methods:**
