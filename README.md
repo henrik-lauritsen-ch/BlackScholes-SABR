@@ -75,10 +75,13 @@ Methods:
 ```
 
 ## SABR.py
-**Classes/Methods:**
+**Implementation and Calibration of the SABR model:**
 
+ ![Smile](https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr2_equations.png)
+
+**Classes/Methods:**
 
 ## VisualizeVolatilitySurfaceFunctionality.py
 The purpose of this library is to show application of the different methods implemented for FX Options
 
- ![Smile](https://github.com/henrik-lauritsen-ch/Pictures/blob/main/bss_fx_smile2_cubic_spline.png)
+ ![Smile](https://github.com/henrik-lauritsen-ch/Pictures/blob/main/bss_fx_smile5_cubic_spline.png)
