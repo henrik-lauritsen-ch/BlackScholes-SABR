@@ -75,7 +75,7 @@ Methods:
 ```
 
 ## SABR.py
-** Implementation and Calibration of the SABR model:**
+**Implementation and Calibration of the SABR model:**
 
  ![Smile](https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr2_equations.png)
 
