@@ -1,5 +1,5 @@
 
-# 1. Do piece wise - lin interpol and show how greeks move
+
 # 2. SABR Calibration + find solver!!
 # 3. Print smile med Cubic-spline + SABR calibration under main()
 # 4. Pricing Vanilla Options Under SABR model = Combine BS + 2
@@ -20,7 +20,7 @@ import Utility as u
 import math
 
 # Volatility Smile
-vol_smile = np.array([0.13852, 0.10042, 0.0973, 0.11582, 0.21732])
+vol_smile = np.array([0.14852, 0.10042, 0.0973, 0.11582, 0.23732])
 
 # Strike from Delta points
 sfd = vs.StrikeFromDelta(10.3719, 0.00565, 0.01822, 14.0/365.0)
@@ -58,8 +58,8 @@ fig.subplots_adjust(hspace=0.275)
 ax =fig.add_subplot(211)
 ax.plot(dt['Strikes'], dt['CS_Vol_Smile'], label = 'Cubic Spline Smile')
 ax.plot(dt['Strikes'], dt['PL_Vol_Smile'], label = 'Piecewise Linear Smile')
-ax.scatter(strike_vec, vol_smile, facecolor = 'orange', linewidth=2.1, label = 'Quoted Smile')
-ax.set_title('Vol-Smile for EURNOK')
+ax.scatter(strike_vec, vol_smile, facecolor = 'orange', linewidth=2.1, label = 'Quoted Points')
+ax.set_title('EURNOK, Vol-Smile')
 ax.set_xlabel('Log-Moneyness')
 ax.set_ylabel('Volatility')
 ax.legend()
@@ -70,8 +70,8 @@ ax = fig.add_subplot(212)
 ax.plot(dt['Strikes'], dt['OptionPrice'], label = 'Cubic Spline Prices')
 ax.plot(dt['Strikes'], dt['PL_OptionPrice'], label = 'Piecewise Linear Prices')
 # ax.plot(dt['Strikes'], dt['InnerValue'], label = 'Option: Inner Value')
-ax.scatter(strike_vec, option_price_vec, color='orange', linewidth=2.1, label='Quoted Prices')
-ax.set_title('Option Price for EURNOK Call option along the volatility smile')
+ax.scatter(strike_vec, option_price_vec, color='orange', linewidth=2.1, label='Quoted Points')
+ax.set_title('EURNOK Call Price along the volatility smile')
 ax.set_xlabel('Log-Moneyness')
 ax.set_ylabel('Option Price (NOK/Option)')
 ax.legend()
