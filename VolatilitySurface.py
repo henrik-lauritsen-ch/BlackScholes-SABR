@@ -9,6 +9,96 @@ import unittest
 import numpy as np
 
 
+class FXVolSurface:
+    
+    def __init__(self, spot, domesticDeposit, foreignDeposit, expiryTerm, volatilitySmile, volatilityInterpolation: u.Interpolation = u.Interpolation.CubicSplineInterpolation, flatExtrapolation = True):
+
+        self._spot = spot
+        self._expiryTerm = expiryTerm
+        self._volatilitySmile = volatilitySmile
+        self._domesticDeposit = domesticDeposit
+        self._foreignDeposit = foreignDeposit
+        self._volatilityInterpolation = volatilityInterpolation
+        self._flat_Extrapolation = flatExtrapolation
+
+
+    def GetVolatility(self, strike, expiryterm):        
+        return self.GetVolatilityFromSmile(strike, expiryterm, self._volatilitySmile)
+
+
+    def GetVolatilityFromSmile(self, strike, expiryterm, smile_vec):
+        sfd = StrikeFromDelta(self._spot, self._domesticDeposit, self._foreignDeposit, self._expiryTerm)
+        atm_strike = sfd.GetATMStrike(smile_vec[2])
+        moneyness_vec = sfd.GetLogMoneynessStrikeVector(smile_vec)        
+        x = math.log(strike/atm_strike)
+
+        return self._volatilityInterpolation(x, moneyness_vec, smile_vec, self._flat_Extrapolation)
+
+
+
+class SABRVolSurface(FXVolSurface):
+    
+    def __init__(self, spot, domesticDeposit, foreignDeposit, expiryTerm, volatilitySmile, beta=0.85):
+        super().__init__(spot, domesticDeposit, foreignDeposit, expiryTerm, volatilitySmile)
+
+        self._beta = beta
+
+
+    def GetVolatilityFromSmile(self, strike, expiryterm, smile_vec):
+                
+        r = self.SabrCalibration(smile_vec)
+        # Missing: here we need to map r-vec back to interval
+        corr = r[0]
+        vovol = r[1]
+        alpha = r[2]
+                        
+        return self.SabrImpliedVol(strike, expiryterm, corr, vovol, alpha, self._beta)
+
+
+    def SabrImpliedVol(self, strike, timetoexpiry, corr, vovol, alpha, beta):        
+        return self.I0_JObloj(strike, corr, vovol, alpha, beta)*(1 + self.I1_Hagan(strike, timetoexpiry, corr, vovol, alpha, beta)*timetoexpiry)
+
+
+    # The I0_JObloj() method is the I0() method from "Fine-tune your smile - correction to Hagan et. al." by Jan Oblój
+    def I0_JObloj(self, strike, corr, vovol, alpha, beta):               
+
+        forward = ForwardContinuousDeposit(self._spot, self._domesticDeposit, self._foreignDeposit, self._expiryTerm)
+        
+        if (forward == strike):
+            retval = alpha * math.Pow(strike, (beta - 1))
+        elif ((vovol == 0.0) and (beta!=1.0)):
+            retval = math.log(forward / strike) * alpha * (1 - beta) / (math.pow(forward, (1 - beta)) - math.pow(strike, (1 - beta)))
+        else:
+                  
+            if (beta == 1.0):
+                z = vovol * math.log(forward / strike) / alpha
+            else:
+                z = vovol / alpha * 1 / (1 - beta) * (math.pow(forward, (1.0 - beta)) - math.pow(strike, (1.0 - beta)))
+
+            denominator = math.log((z - corr + math.sqrt(1 - 2 * corr * z + z * z)) / (1 - corr))
+            retval = vovol * math.log(forward / strike) / denominator
+
+        return retval
+
+
+    # The I1_Hagan() method is the second term of the implied volatility formula (eq. 2.17a) in "Managing Smile Risk" by Hagan et. al
+    def I1_Hagan(self, strike, timetomaturity, corr, vovol, alpha, beta):
+            
+        forward = ForwardContinuousDeposit(self._spot, self._domesticDeposit, self._foreignDeposit, timetomaturity)
+        
+        return ((1.0 - beta) * (1.0 - beta) / 24.0 * alpha * alpha / math.pow(forward * strike, 1.0 - beta) + 
+                1.0 / 4.0 * corr * beta * vovol * alpha / math.pow(forward * strike, (1.0 - beta) / 2.0) + 
+                (2.0 - 3.0 * corr * corr) / 24.0 * vovol * vovol)
+
+
+    def SabrCalibration(self, smile_vec):
+        # Missing Build calibration
+        return np.array([0, 0.1, 0.1])
+
+
+
+
+
 def ForwardContinuousDeposit(spot, domesticDeposit, foreignDeposit, expiryTerm):
     return spot * math.exp((domesticDeposit - foreignDeposit) * expiryTerm)
 
