@@ -321,11 +321,20 @@ class Interpolation:
         return y
 
 
-    def CubicSplineInterpolation(self, x, xs, ys):
+    def CubicSplineInterpolation(self, x, xs, ys, flatExtrapolation=True):
         # Method taken from Numerical Recipes in C
         # http://phys.uri.edu/nigh/NumRec/bookfpdf/f3-3.pdf
-        y2s = self.spline(xs, ys)
-        return self.splint(x, xs, ys, y2s)
+        
+        nx = len(xs)        
+        if (x < xs[0] and flatExtrapolation==True):
+            y = ys[0]
+        elif (x > xs[nx - 1] and flatExtrapolation==True):
+            y = ys[nx - 1]
+        else:
+            y2s = self.spline(xs, ys)
+            y = self.splint(x, xs, ys, y2s)
+        
+        return y
         
 
     def spline(self, xs, ys, yp1=0.99e31, ypn=0.99e31):
