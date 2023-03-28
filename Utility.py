@@ -286,8 +286,17 @@ def FindIndex(x, data):
 
 class Interpolation:
     
-    def __init__(self) -> None:
-        pass
+    def __init__(self, flatExtrapolation):
+        self._flatExtrapolation = flatExtrapolation
+    
+    
+    def GetInterpolatedValue(self, x, xs, ys):
+        pass 
+    
+class PiecewiseLinearInterpolation(Interpolation):
+
+    def __init__(self, flatExtrapolation) -> None:
+        super().__init__(flatExtrapolation)    
     
     
     def LinearInterpolation(self, x, x1, x2, y1, y2):
@@ -300,17 +309,17 @@ class Interpolation:
         return y
 
 
-    def PiecewiseLinearInterpolation(self, x, xs, ys, flatExtrapolation=True):
+    def GetInterpolatedValue(self, x, xs, ys):
         
         nx = len(xs)
         
         if (x<xs[0]):
-            if (flatExtrapolation==True):
+            if (self._flatExtrapolation==True):
                 y = ys[0]
             else:
                 y = self.LinearInterpolation(x, xs[0], xs[1], ys[0], ys[1])
         elif (x>xs[nx - 1]):
-            if (flatExtrapolation==True):
+            if (self._flatExtrapolation==True):
                 y = ys[nx - 1]
             else:
                 y = self.LinearInterpolation(x, xs[nx - 2], xs[nx - 1], ys[nx - 2], ys[nx - 1])
@@ -321,14 +330,19 @@ class Interpolation:
         return y
 
 
-    def CubicSplineInterpolation(self, x, xs, ys, flatExtrapolation=True):
+class CubicSplineInterpolation(Interpolation):
+    
+    def __init__(self, flatExtrapolation):
+        super().__init__(flatExtrapolation)
+    
+    def GetInterpolatedValue(self, x, xs, ys):
         # Method taken from Numerical Recipes in C
         # http://phys.uri.edu/nigh/NumRec/bookfpdf/f3-3.pdf
         
         nx = len(xs)        
-        if (x < xs[0] and flatExtrapolation==True):
+        if (x < xs[0] and self._flatExtrapolation==True):
             y = ys[0]
-        elif (x > xs[nx - 1] and flatExtrapolation==True):
+        elif (x > xs[nx - 1] and self._flatExtrapolation==True):
             y = ys[nx - 1]
         else:
             y2s = self.spline(xs, ys)
@@ -437,17 +451,22 @@ class Test_Utility(unittest.TestCase):
         xs = np.array([9.796265875871027, 10.067098505250692, 10.356101824110898, 10.687697656702378, 11.069582777590423])
         ys = np.array([0.09852,	0.09542, 0.0973, 0.10582, 0.11732])
             # Interpolation between 2 points
-        self.assertEqual(round(Interpolation().CubicSplineInterpolation(10.7, xs, ys), 12), round(0.106188572556555, 12))
+        cs = CubicSplineInterpolation(False)    
+        
+        self.assertEqual(round(cs.GetInterpolatedValue(10.7, xs, ys), 12), round(0.106188572556555, 12))
             # Linear extrapolation above right end point
-        self.assertEqual(round(Interpolation().CubicSplineInterpolation(11.9, xs, ys), 12), round(0.14239424307285, 12))
+        self.assertEqual(round(cs.GetInterpolatedValue(11.9, xs, ys), 12), round(0.14239424307285, 12))
 
     def test_PieceviseLinear(self):
         xa = np.array([2, 4.1, 7.3331, 9.998])
         ya = np.array([10, 7, 5.6, 11.1])
-        self.assertEqual(Interpolation().PiecewiseLinearInterpolation(1.1, xa, ya, True), 10)
-        self.assertEqual(round(Interpolation().PiecewiseLinearInterpolation(3.1, xa, ya, True), 14), 8.42857142857143)
-        self.assertEqual(round(Interpolation().PiecewiseLinearInterpolation(7.2, xa, ya, True), 14), 5.65763508706814)
-        self.assertEqual(round(Interpolation().PiecewiseLinearInterpolation(21.1, xa, ya, False), 13), 34.0130548988705)
+        pl = PiecewiseLinearInterpolation(True)
+        self.assertEqual(pl.GetInterpolatedValue(1.1, xa, ya), 10)
+        self.assertEqual(round(pl.GetInterpolatedValue(3.1, xa, ya), 14), 8.42857142857143)
+        self.assertEqual(round(pl.GetInterpolatedValue(7.2, xa, ya), 14), 5.65763508706814)
+        
+        pl._flatExtrapolation = False
+        self.assertEqual(round(pl.GetInterpolatedValue(21.1, xa, ya), 13), 34.0130548988705)
 
 if __name__ == '__main__':
     unittest.main()
