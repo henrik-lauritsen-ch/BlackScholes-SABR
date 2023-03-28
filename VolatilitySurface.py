@@ -41,8 +41,16 @@ class SABRVolSurface(FXVolSurface):
         super().__init__(spot, domesticDeposit, foreignDeposit, expiryTerm, volatilitySmile)
 
         self._beta = beta
-        
-        
+        sfd = StrikeFromDelta(spot, domesticDeposit, foreignDeposit, expiryTerm)
+        self._strikes = sfd.GetStrikeVector(volatilitySmile)
+
+        if (expiryTerm <= 1.0):
+            self._vovol = 1.0
+        elif (expiryTerm <= 3.0):
+            self._vovol = 0.5
+        else:
+            self._vovol = 0.25
+
 
     def GetVolatilityFromSmile(self, strike, expiryterm, smile_vec):
                 
@@ -89,6 +97,27 @@ class SABRVolSurface(FXVolSurface):
         return ((1.0 - beta) * (1.0 - beta) / 24.0 * alpha * alpha / math.pow(forward * strike, 1.0 - beta) + 
                 1.0 / 4.0 * corr * beta * vovol * alpha / math.pow(forward * strike, (1.0 - beta) / 2.0) + 
                 (2.0 - 3.0 * corr * corr) / 24.0 * vovol * vovol)
+
+
+    # This method established the differencence between the SABR implied vol and the ATM volatility for a given alpha    
+    def FirstGuessAlphaMax(self, x):
+    
+        # Correlationen set to 1.0 in order to solve for the upper bound on alpha (could have have been -1 also)
+        # See equation 9 in "Fitting the smile - Smart parameters for SABR and Heston" 
+        # by Pierre Gauthier and Pierre-Yves H. Rivaille, 2009 (PP)
+    
+        forward = ForwardContinuousDeposit(self._spot, self._domesticDeposit, self._foreignDeposit, self._expiryTerm)
+        return self.SabrImpliedVol(forward, self._expiryTerm, 1.0, self._vovol, x, self._beta) - self._ATMVol
+    
+
+    # Input correlation and the difference between the SABR 25 delta risk-reversal and the quoted 25 delta risk
+    # reversal is returned. This method is applied for a first guess of the SABR correlation parameter
+    def FirstGuessCorrelation(self, x):
+
+        _sabrrr25 = (self.SabrImpliedVol(self._strikes[3], self._expiryTerm, x, self._vovol, _alpha, self._beta) 
+                    - self.SabrImpliedVol(self._strikes[1], self._expiryTerm, x, self._vovol, _alpha, self._beta))
+        return _sabrrr25 - self._rr25
+
 
 
     def SabrCalibration(self, smile_vec):
@@ -200,7 +229,7 @@ class Test_VolSurface(unittest.TestCase):
         vcs_strikes = sfd2.GetStrikeVector(vols)
         self.assertEqual(round((strikes - vcs_strikes).sum(), 8), 0.0)
 
-    def test_FXVolSurface(self):
+    def test_FXVolSurface_CSI(self):
         vs_vec = np.array([0.117885, 0.1191, 0.1300, 0.1501, 0.174995])        
         csi = u.CubicSplineInterpolation(True)
         vs = FXVolSurface(85.3678, 0.012, 0.0053, 61/365.0, vs_vec, csi)
