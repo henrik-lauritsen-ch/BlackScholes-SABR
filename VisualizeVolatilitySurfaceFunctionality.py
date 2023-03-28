@@ -38,12 +38,12 @@ for i in range(5):
     option_price_vec[i] = bs_option.GetBaseOptionValue(bs.OptionType.Call, vol_smile[i])    
     
 
-plot_strikes = np.linspace(-0.04, 0.06, 60)
+plot_strikes = np.linspace(-0.045, 0.065, 60)
 plot_vol = np.zeros(30)
 
 dt = pd.DataFrame(plot_strikes, columns=['Strikes'])
-cs = u.CubicSplineInterpolation(False)
-pl = u.PiecewiseLinearInterpolation(False)
+cs = u.CubicSplineInterpolation()
+pl = u.PiecewiseLinearInterpolation()
 
 dt['CS_Vol_Smile'] = dt.apply(lambda row: cs.GetInterpolatedValue(row['Strikes'], logmon_strike_vec, vol_smile), axis=1)
 dt['PL_Vol_Smile'] = dt.apply(lambda row: pl.GetInterpolatedValue(row['Strikes'], logmon_strike_vec, vol_smile), axis=1)
