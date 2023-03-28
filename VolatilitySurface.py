@@ -19,7 +19,8 @@ class FXVolSurface:
         self._domesticDeposit = domesticDeposit
         self._foreignDeposit = foreignDeposit
         self._volatilityInterpolation = volatilityInterpolation        
-
+        self._ATMVol = volatilitySmile[2]
+        self._rr25 = volatilitySmile[3] - volatilitySmile[1]
 
     def GetVolatility(self, strike):        
         return self.GetVolatilityFromSmile(strike, self._volatilitySmile)
@@ -27,7 +28,7 @@ class FXVolSurface:
 
     def GetVolatilityFromSmile(self, strike, smile_vec):
         sfd = StrikeFromDelta(self._spot, self._domesticDeposit, self._foreignDeposit, self._expiryTerm)
-        atm_strike = sfd.GetATMStrike(smile_vec[2])
+        atm_strike = sfd.GetATMStrike(self._ATMVol)
         moneyness_vec = sfd.GetLogMoneynessStrikeVector(smile_vec)        
         x = math.log(strike/atm_strike)
 
@@ -40,7 +41,8 @@ class SABRVolSurface(FXVolSurface):
         super().__init__(spot, domesticDeposit, foreignDeposit, expiryTerm, volatilitySmile)
 
         self._beta = beta
-
+        
+        
 
     def GetVolatilityFromSmile(self, strike, expiryterm, smile_vec):
                 
@@ -197,7 +199,13 @@ class Test_VolSurface(unittest.TestCase):
         sfd2 = StrikeFromDelta(10.3719, 0.00565, 0.01822, 0.194520547945205)
         vcs_strikes = sfd2.GetStrikeVector(vols)
         self.assertEqual(round((strikes - vcs_strikes).sum(), 8), 0.0)
-        
+
+    def test_FXVolSurface(self):
+        vs_vec = np.array([0.117885, 0.1191, 0.1300, 0.1501, 0.174995])        
+        csi = u.CubicSplineInterpolation(True)
+        vs = FXVolSurface(85.3678, 0.012, 0.0053, 61/365.0, vs_vec, csi)
+        self.assertEqual(round(vs.GetVolatility(90.123), 14), round(0.154975045068546, 14))
+        self.assertEqual(round(vs.GetVolatility(94.123), 14), round(0.174995, 14))
         
 if __name__ == '__main__':
     unittest.main()
