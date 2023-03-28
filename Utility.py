@@ -286,7 +286,7 @@ def FindIndex(x, data):
 
 class Interpolation:
     
-    def __init__(self, flatExtrapolation):
+    def __init__(self, flatExtrapolation=False):
         self._flatExtrapolation = flatExtrapolation
     
     
@@ -295,7 +295,7 @@ class Interpolation:
     
 class PiecewiseLinearInterpolation(Interpolation):
 
-    def __init__(self, flatExtrapolation) -> None:
+    def __init__(self, flatExtrapolation=False) -> None:
         super().__init__(flatExtrapolation)    
     
     
@@ -332,7 +332,7 @@ class PiecewiseLinearInterpolation(Interpolation):
 
 class CubicSplineInterpolation(Interpolation):
     
-    def __init__(self, flatExtrapolation):
+    def __init__(self, flatExtrapolation=False):
         super().__init__(flatExtrapolation)
     
     def GetInterpolatedValue(self, x, xs, ys):
