@@ -11,28 +11,27 @@ import numpy as np
 
 class FXVolSurface:
     
-    def __init__(self, spot, domesticDeposit, foreignDeposit, expiryTerm, volatilitySmile, volatilityInterpolation: u.Interpolation = u.Interpolation.CubicSplineInterpolation, flatExtrapolation = True):
+    def __init__(self, spot, domesticDeposit, foreignDeposit, expiryTerm, volatilitySmile, volatilityInterpolation: u.Interpolation = u.CubicSplineInterpolation(False)):
 
         self._spot = spot
         self._expiryTerm = expiryTerm
         self._volatilitySmile = volatilitySmile
         self._domesticDeposit = domesticDeposit
         self._foreignDeposit = foreignDeposit
-        self._volatilityInterpolation = volatilityInterpolation
-        self._flat_Extrapolation = flatExtrapolation
+        self._volatilityInterpolation = volatilityInterpolation        
 
 
-    def GetVolatility(self, strike, expiryterm):        
-        return self.GetVolatilityFromSmile(strike, expiryterm, self._volatilitySmile)
+    def GetVolatility(self, strike):        
+        return self.GetVolatilityFromSmile(strike, self._volatilitySmile)
 
 
-    def GetVolatilityFromSmile(self, strike, expiryterm, smile_vec):
+    def GetVolatilityFromSmile(self, strike, smile_vec):
         sfd = StrikeFromDelta(self._spot, self._domesticDeposit, self._foreignDeposit, self._expiryTerm)
         atm_strike = sfd.GetATMStrike(smile_vec[2])
         moneyness_vec = sfd.GetLogMoneynessStrikeVector(smile_vec)        
         x = math.log(strike/atm_strike)
 
-        return self._volatilityInterpolation(x, moneyness_vec, smile_vec, self._flat_Extrapolation)
+        return self._volatilityInterpolation.GetInterpolatedValue(x, moneyness_vec, smile_vec)
 
 
 
@@ -55,11 +54,11 @@ class SABRVolSurface(FXVolSurface):
         return self.SabrImpliedVol(strike, expiryterm, corr, vovol, alpha, self._beta)
 
 
-    def SabrImpliedVol(self, strike, timetoexpiry, corr, vovol, alpha, beta):        
-        return self.I0_JObloj(strike, corr, vovol, alpha, beta)*(1 + self.I1_Hagan(strike, timetoexpiry, corr, vovol, alpha, beta)*timetoexpiry)
+    def SabrImpliedVol(self, strike, corr, vovol, alpha, beta):        
+        return self.I0_JObloj(strike, corr, vovol, alpha, beta)*(1 + self.I1_Hagan(strike, corr, vovol, alpha, beta)*self._expiryTerm)
 
 
-    # The I0_JObloj() method is the I0() method from "Fine-tune your smile - correction to Hagan et. al." by Jan Oblój
+    # The I0_JObloj(), the I0() method from "Fine-tune your smile - correction to Hagan et. al." by Jan Oblój
     def I0_JObloj(self, strike, corr, vovol, alpha, beta):               
 
         forward = ForwardContinuousDeposit(self._spot, self._domesticDeposit, self._foreignDeposit, self._expiryTerm)
@@ -81,10 +80,10 @@ class SABRVolSurface(FXVolSurface):
         return retval
 
 
-    # The I1_Hagan() method is the second term of the implied volatility formula (eq. 2.17a) in "Managing Smile Risk" by Hagan et. al
-    def I1_Hagan(self, strike, timetomaturity, corr, vovol, alpha, beta):
+    # The I1_Hagan(), second term of the implied volatility formula (eq. 2.17a) in "Managing Smile Risk" by Hagan et. al
+    def I1_Hagan(self, strike, corr, vovol, alpha, beta):
             
-        forward = ForwardContinuousDeposit(self._spot, self._domesticDeposit, self._foreignDeposit, timetomaturity)
+        forward = ForwardContinuousDeposit(self._spot, self._domesticDeposit, self._foreignDeposit, self._expiryTerm)
         
         return ((1.0 - beta) * (1.0 - beta) / 24.0 * alpha * alpha / math.pow(forward * strike, 1.0 - beta) + 
                 1.0 / 4.0 * corr * beta * vovol * alpha / math.pow(forward * strike, (1.0 - beta) / 2.0) + 
