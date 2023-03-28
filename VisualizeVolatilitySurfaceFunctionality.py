@@ -18,19 +18,34 @@ import matplotlib.pyplot as plt
 import VolatilitySurface as vs
 import Utility as u
 import math
+import StrikeFromDelta as sfd
 
 # Volatility Smile
 vol_smile = np.array([0.14852, 0.10042, 0.0973, 0.11582, 0.23732])
 
 # Strike from Delta points
-sfd = vs.StrikeFromDelta(10.3719, 0.00565, 0.01822, 14.0/365.0)
-logmon_strike_vec = sfd.GetLogMoneynessStrikeVector(vol_smile)
+sd = sfd.StrikeFromDelta(10.3719, 0.00565, 0.01822, 14.0/365.0)
+logmon_strike_vec = sd.GetLogMoneynessStrikeVector(vol_smile)
 
-# print(logmon_strike_vec)
+# SABR first calibration
+sabr = vs.SABRVolSurface(10.3719, 0.00565, 0.01822, 14.0/365.0, vol_smile)
+sabr.SABRFirstGuess()
+
+print(sabr._alpha)
+print(sabr._corr)
+print(sabr._vovol)
+print(sabr._beta)
+
+
 
 # BlackScholes Option object
 bs_option = bs.Vanilla(10.3719, 10.360169, 71/365.0, 0.00565, 0.01822, 0.0973)
-atm_strike = sfd.GetATMStrike(vol_smile[2])
+atm_strike = sd.GetATMStrike(vol_smile[2])
+
+
+print(sabr.SabrImpliedVol(atm_strike, 0.9999, sabr._vovol, sabr._alpha, sabr._beta))
+print(atm_strike)
+print(sabr._strikes[2])
 
 option_price_vec = np.zeros(5)
 for i in range(5):
@@ -45,8 +60,12 @@ dt = pd.DataFrame(plot_strikes, columns=['Strikes'])
 cs = u.CubicSplineInterpolation()
 pl = u.PiecewiseLinearInterpolation()
 
+dt['Actual_Strike'] = dt.apply(lambda row: math.exp(row['Strikes'])*atm_strike, axis=1) 
 dt['CS_Vol_Smile'] = dt.apply(lambda row: cs.GetInterpolatedValue(row['Strikes'], logmon_strike_vec, vol_smile), axis=1)
 dt['PL_Vol_Smile'] = dt.apply(lambda row: pl.GetInterpolatedValue(row['Strikes'], logmon_strike_vec, vol_smile), axis=1)
+dt['SABR_Vol_Smile'] = dt.apply(lambda row: sabr.GetVolatility(row['Actual_Strike']), axis=1)
+
+
 
 for index, i in dt.iterrows():        
     bs_option._strike = math.exp(dt.loc[index, 'Strikes'])*atm_strike
@@ -60,6 +79,7 @@ fig.subplots_adjust(hspace=0.275)
 ax =fig.add_subplot(211)
 ax.plot(dt['Strikes'], dt['CS_Vol_Smile'], label = 'Cubic Spline Smile')
 ax.plot(dt['Strikes'], dt['PL_Vol_Smile'], label = 'Piecewise Linear Smile')
+ax.plot(dt['Strikes'], dt['SABR_Vol_Smile'], label = 'SABR')
 ax.scatter(logmon_strike_vec, vol_smile, facecolor = 'orange', linewidth=2.1, label = 'Quoted Points')
 ax.set_title('EURNOK, Vol-Smile')
 ax.set_xlabel('Log-Moneyness')
