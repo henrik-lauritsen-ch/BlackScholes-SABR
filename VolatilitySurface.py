@@ -34,7 +34,6 @@ class FXVolSurface:
         return self._volatilityInterpolation.GetInterpolatedValue(x, moneyness_vec, smile_vec)
 
 
-
 class SABRVolSurface(FXVolSurface):
     
     def __init__(self, spot, domesticDeposit, foreignDeposit, expiryTerm, volatilitySmile, beta=0.85):
@@ -51,7 +50,7 @@ class SABRVolSurface(FXVolSurface):
         vovol = r[1]
         alpha = r[2]
                         
-        return self.SabrImpliedVol(strike, expiryterm, corr, vovol, alpha, self._beta)
+        return self.SabrImpliedVol(strike, corr, vovol, alpha, self._beta)
 
 
     def SabrImpliedVol(self, strike, corr, vovol, alpha, beta):        
