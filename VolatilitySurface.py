@@ -201,7 +201,7 @@ class SABRVolSurface(FXVolSurface):
                        u.IntervalABToRealAxis(self._alpha0, self._alphamin, self._alphamax)])                
         x_min = so.minimize(self.SABRCalibObject, x0, method='Powell', tol=0.0000001)
         
-        print(x_min)
+        # print(x_min)
         
         # Map result back tp min/max intervals
         self._corr = u.RealAxisToIntervalAB(x_min.x[0], -0.9999, 0.9999)
@@ -209,7 +209,6 @@ class SABRVolSurface(FXVolSurface):
         self._alpha = u.RealAxisToIntervalAB(x_min.x[2], self._alphamin, self._alphamax)      
         
         pass
-
 
 
     def CalcStrikeVector(self, volatilitySmile) -> None:        
@@ -228,5 +227,9 @@ class Test_VolSurface(unittest.TestCase):
         self.assertEqual(round(vs.GetVolatility(90.123), 14), round(0.154975045068546, 14))
         self.assertEqual(round(vs.GetVolatility(94.123), 14), round(0.174995, 14))
         
+    def test_SABR(self):
+        # Todo Freitag!!
+        pass 
+    
 if __name__ == '__main__':
     unittest.main()
