@@ -45,7 +45,11 @@ class SABRVolSurface(FXVolSurface):
 
         self._beta = beta       
 
-        if (expiryTerm <= 1.0):
+        if (expiryTerm <= 14/365):
+            self._vovol0 = 5
+        elif (expiryTerm <= 31/365):
+            self._vovol0 = 2
+        elif (expiryTerm <= 1.0):
             self._vovol0 = 1.0
         elif (expiryTerm <= 3.0):
             self._vovol0 = 0.5
@@ -68,7 +72,7 @@ class SABRVolSurface(FXVolSurface):
         
         self._strikes = np.nan
         self.CalcStrikeVector(volatilitySmile)
-        self._calibrationWeights = np.array([1.0, 1.0, 3.0, 1.0, 1.0])
+        self._calibrationWeights = np.array([1.0, 1.0, 2.0, 1.0, 1.0])
         
         
     def GetVolatilityFromSmile(self, strike, smile_vec):
@@ -128,8 +132,7 @@ class SABRVolSurface(FXVolSurface):
     
         # Correlationen set to 1.0 in order to solve for the upper bound on alpha (could have have been -1 also)
         # See equation 9 in "Fitting the smile - Smart parameters for SABR and Heston" 
-        # by Pierre Gauthier and Pierre-Yves H. Rivaille, 2009 (PP)
-        # forward = sfd.ForwardContinuousDeposit(self._spot, self._domesticDeposit, self._foreignDeposit, self._expiryTerm)
+        # by Pierre Gauthier and Pierre-Yves H. Rivaille, 2009 (PP)        
         ATMStrike = self._strikes[2]        
         return self.SabrImpliedVol(ATMStrike, 0.9999, self._vovol0, x, self._beta) - self._ATMVol
     
@@ -150,8 +153,8 @@ class SABRVolSurface(FXVolSurface):
         # alpha. We solve equation 9 in PP to establish this bound. Note, that as vovol is a guess then alpha may be
         # larger than the alpha established as the max alpha. For that reason we chooes alphamax = alpha *1.2
         self._alpha0 = u.bisection(self.FirstGuessAlphaMax, self._ATMVol/2.0, self._ATMVol*3.0, 0.00001, 10)
-        self._alphamin = self._alpha0 * 0.5       
-        self._alphamax = self._alpha0 * 2.0
+        self._alphamin = self._alpha0 * 0.7       
+        self._alphamax = self._alpha0 * 1.5
                
         self._corr0=0
         while (self._corr0==0):
@@ -165,7 +168,7 @@ class SABRVolSurface(FXVolSurface):
                     self._vovol0 /= 1.2
         
         self._vovolmin = self._vovol0/2.0
-        self._vovolmax = self._vovol0*10
+        self._vovolmax = self._vovol0*3.0
         
         pass
 
@@ -192,18 +195,15 @@ class SABRVolSurface(FXVolSurface):
         # Pre-calibation - First guess on a solution
         self.SABRFirstGuess()
         
-        # Missing: here we need to map r-vec back to interval
-        # x0_corr = u.IntervalABToRealAxis(self._corr0, -0.9999, 0.9999)
-        # x0_vovol = u.IntervalABToRealAxis(self._vovol0, self._vovolmin, self._vovolmax)
-        # x0_alpha = u.IntervalABToRealAxis(self._alpha0, self._alphamin, self._alphamax)
+        # Calibrate, parameters mapped to R3
         x0 = np.array([u.IntervalABToRealAxis(self._corr0, -0.9999, 0.9999), 
                        u.IntervalABToRealAxis(self._vovol0, self._vovolmin, self._vovolmax), 
-                       u.IntervalABToRealAxis(self._alpha0, self._alphamin, self._alphamax)])
-                
+                       u.IntervalABToRealAxis(self._alpha0, self._alphamin, self._alphamax)])                
         x_min = so.minimize(self.SABRCalibObject, x0, method='Powell', tol=0.0000001)
         
         print(x_min)
         
+        # Map result back tp min/max intervals
         self._corr = u.RealAxisToIntervalAB(x_min.x[0], -0.9999, 0.9999)
         self._vovol= u.RealAxisToIntervalAB(x_min.x[1], self._vovolmin, self._vovolmax)
         self._alpha = u.RealAxisToIntervalAB(x_min.x[2], self._alphamin, self._alphamax)      
@@ -216,27 +216,6 @@ class SABRVolSurface(FXVolSurface):
         self._strikes = self._sd.GetStrikeVector(volatilitySmile)        
         pass
 
-
-
-# vs_vec = np.array([0.14852, 0.10042, 0.0973, 0.11582, 0.23732])
-# sabr = SABRVolSurface(85, 0.012, 0.00523, 7/365.0, vs_vec)
-
-# sabr.SabrCalibration()
-# print(sabr)
-#sabr.SABRFirstGuess()
-
-# print(sabr._alpha)
-# print(sabr._corr)
-# print(sabr._vovol)
-
-
-# print(sabr._alphamax)
-# print(sabr._alphamin)
-# print(sabr._vovolmax)
-# print(sabr._vovolmin)
-# print(sabr.SabrImpliedVol(85.16357197805945, sabr._corr, sabr._vovol, sabr._alpha, sabr._beta))
-# print(sabr.SabrImpliedVol(85.16357197805945, 0.9999, sabr._vovol, sabr._alpha, sabr._beta))
- 
 
 
 #//     Unit-Test: Volatility Surface
