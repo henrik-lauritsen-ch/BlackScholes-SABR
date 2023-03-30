@@ -5,7 +5,7 @@
 import math
 import numpy as np
 import unittest
-
+import sys
 
 class Constants:
     
@@ -15,6 +15,61 @@ class Constants:
     _Pi = 3.1415926535897932
     _SqrtTwo = 1.4142135623730951
     _OneOverRootTwoPi = 0.398942280401433
+
+
+
+# This method maps a real numer y to the interval [a, b] using the inverse of 
+# y = (x-(a+b)/2)/((x-a)(x-b)). y is a bijektiv mapping of [a, b] into R.
+# The property of y:
+# y((a+b)/2) = 0.0 
+# y ->  infinity for x -> a+ 
+# y -> -infinity for x -> b-
+# The inverse of y is given as
+# x = (y*(a+b+1/y) + sqrt(y^2*(a+b+1/y)^2 - 4*y*(a*b*y+(a+b)/2)))/2*y
+def RealAxisToIntervalAB(y, a, b):
+
+    a1 = y
+    b1 = -(y * a + y * b + 1)
+    c1 = a * b * y + (a + b) / 2
+
+    if (y == 0.0):
+        retval = (a + b) / 2
+    else:
+        retval = SolutionToSecondDegreePolynomial(a1, b1, c1, False)
+
+    return retval
+
+
+# This method maps a real numer from the interval [a, b] into R using 
+# y = (x-(a+b)/2)/((x-a)(x-b)). y is bijective
+def IntervalABToRealAxis(x, a, b):
+
+    if (x == a):
+        retval = sys.float_info.max
+    elif (x == b):
+        retval = sys.float_info.min
+    else:
+        retval = (x - (a + b) / 2) / ((x - a) * (x - b))
+
+    return retval
+
+# This method returne the solution to the second order polynomial equation:
+# a*x^2 + b*x + c = 0.
+# Solution: x = (-b +/- sqrt(b^2 - 4*a*c))/(2*a)
+# If plussoltion is TRUE then solution x = (-b + sqrt(b^2 - 4*a*c))/(2*a) is returned
+def SolutionToSecondDegreePolynomial(a, b, c, plussolution = True):
+
+    if ((b * b - 4 * a * c) >= 0.0):
+        sqrtbb4ac = math.sqrt(b * b - 4 * a * c)
+    else:
+        raise ValueError('No solution to second degree polynomial')
+
+    if (plussolution == True):
+        retval = (-b + sqrtbb4ac) / (2 * a)
+    else:
+        retval = (-b - sqrtbb4ac) / (2 * a)
+
+    return retval
 
 
 def bisection(func, x1, x2, x_accuracy, JMAX = 40):
