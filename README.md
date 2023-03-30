@@ -84,4 +84,12 @@ Methods:
 ## VisualizeVolatilitySurfaceFunctionality.py
 The purpose of this library is to show application of the different methods implemented for FX Options
 
- ![Smile](https://github.com/henrik-lauritsen-ch/Pictures/blob/main/bss_fx_smile5_cubic_spline.png)
+### USD/JPY SABR Calibration:
+![Smile](https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_USDJPY.png)
+
+### ZAR/JPY SABR Calibration:
+![Smile](https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_ZARJPY.png)
+
+### CHF/DKK SABR Calibration:
+![Smile](https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_CHFDKK.png)
+
