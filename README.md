@@ -5,6 +5,9 @@ Functionality to value FX options under Garman Kohlhagen and SABR
 ## BlackScholes.py
 **Classes:**
 ```
+
+.... Garman Kohlhagen ..... EURUSD 1. + 2. ccy was heisst long/short?
+
 class Vanilla:
 
 - GetOptionValue(optionType)
