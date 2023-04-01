@@ -70,7 +70,7 @@ Methods:
 
 ## The SABR Model
 
- ![Smile](https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_model.png)
+ ![Smile](https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_model_v2.png)
 
 **Classes/Methods:**
 
