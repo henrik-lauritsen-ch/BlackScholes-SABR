@@ -10,15 +10,6 @@ The formula Garman-Kohlhagen formula for a vanilla Call option:
 
 ![Garman-Kohlhagen](https://github.com/henrik-lauritsen-ch/Pictures/blob/main/gk_call_v3.png)
 
-with
-
-![Garman-Kohlhagen](https://github.com/henrik-lauritsen-ch/Pictures/blob/main/gk_d1d2.png)
-
-and where 
-
-
-
-![Garman-Kohlhagen](https://github.com/henrik-lauritsen-ch/Pictures/blob/main/gk_modelpara_s.png)
 
 Note: For a currency cross CCY1/CCY2 the second currency is considered the domestic currency and the first currency the foreign!
 
