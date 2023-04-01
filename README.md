@@ -97,5 +97,6 @@ The purpose of this library is to show application of the different methods impl
 
 ### CHF/DKK SABR Calibration:
 (Implementation: Jan Obloj + Benaim/Dodgson/Kainth Smile Extrapolation)
+
 ![Smile](https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_CHFDKK.png)
 
