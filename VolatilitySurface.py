@@ -75,10 +75,6 @@ class SABRVolSurface(FXVolSurface):
         return self.SabrImpliedVol(strike, self._alpha, self._corr, self._vovol, self._beta)
   
 
-    def GetSABRVolatility(self, strike, alpha, corr, vovol, beta):
-        return self.SabrImpliedVol(strike, alpha, corr, vovol, beta)
-
-
     def SabrImplVolFwd(self, strike, forward, alpha, corr, vovol, beta):
         return self.I0_JObloj(strike, forward, alpha, corr, vovol, beta)*(1 + self.I1_Hagan(strike, forward, alpha, corr, vovol, beta)*self._expiryTerm)
 
