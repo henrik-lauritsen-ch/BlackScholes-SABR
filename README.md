@@ -18,28 +18,23 @@ and where
 
 
 
-![Garman-Kohlhagen](https://github.com/henrik-lauritsen-ch/Pictures/blob/main/gk_modelpara_s.png)
+![Garman-Kohlhagen](https://github.com/henrik-lauritsen-ch/Pictures/blob/main/gk_modelpara.png)
 
 Note: For a currency cross CCY1/CCY2 the second currency is considered the domestic currency and the first currency the foreign!
 
 **Classes:**
 ```
 class Vanilla: Garman-Kohlhagen method along with all Greeks
-```
 
-```
 class OptionType(enum.Enum): Put/Call
 ```
 
 ## Utility.py
 **Classes/Methods:**
 
-
 ```
 class norm: Standard normal density and distribution functions along with inverse normal
-```
 
-```
 class Interpolation: Piecewiese linear and Cubic-Splie 
 ```
 
