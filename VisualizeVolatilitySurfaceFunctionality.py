@@ -94,7 +94,7 @@ pl = u.PiecewiseLinearInterpolation()
 # dt['Actual_Strike'] = dt.apply(lambda row: math.exp(row['Strikes'])*atm_strike, axis=1) 
 dt['CS_Vol_Smile'] = dt.apply(lambda row: cs.GetInterpolatedValue(row['Strikes'], strike_vec, vol_smile), axis=1)
 dt['PL_Vol_Smile'] = dt.apply(lambda row: pl.GetInterpolatedValue(row['Strikes'], strike_vec, vol_smile), axis=1)
-dt['SABR_Vol_Smile'] = dt.apply(lambda row: sabr.SabrImpliedVol(row['Strikes'], sabr._corr, sabr._vovol, sabr._alpha, 0.85), axis=1)
+dt['SABR_Vol_Smile'] = dt.apply(lambda row: sabr.SabrImpliedVol(row['Strikes'], sabr._alpha, sabr._corr, sabr._vovol, 0.85), axis=1)
 
 
 for index, i in dt.iterrows():        
