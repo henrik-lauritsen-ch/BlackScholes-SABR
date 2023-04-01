@@ -89,7 +89,7 @@ Implementation: Jan Obloj, Fine-Tune Your Smile Correction to Hagan et al
 ![Smile](https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_ZARJPY.png)
 
 ### ZAR/JPY SABR Calibration:
-Implementation: Jan Obloj, Benaim/Dodgson/Kainth Smile Extrapolation
+Implementation: Jan Obloj + Benaim/Dodgson/Kainth Smile Extrapolation
 
 ![Smile](https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_ZARJPY_SE.png)
 
