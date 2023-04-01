@@ -78,13 +78,16 @@ Methods:
 ## VisualizeVolatilitySurfaceFunctionality.py
 The purpose of this library is to show application of the different methods implemented for FX Options
 
-### USD/JPY SABR Calibration (Implementation: Jan Obloj - FINE-TUNE YOUR SMILE CORRECTION TO HAGAN ET AL):
+### USD/JPY SABR Calibration:
+(Implementation: Jan Obloj - Fine-Tune Your Smile Correction to Hagan et al)
 ![Smile](https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_USDJPY.png)
 
-### ZAR/JPY SABR Calibration (Implementation: Jan Obloj - FINE-TUNE YOUR SMILE CORRECTION TO HAGAN ET AL):
+### ZAR/JPY SABR Calibration:
+(Implementation: Jan Obloj - Fine-Tune Your Smile Correction to Hagan et al)
 ![Smile](https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_ZARJPY.png)
 
-### ZAR/JPY SABR Calibration (Implementation: Jan Obloj + Benaim/Dodgson/Kainth Smile Extrapolation)::
+### ZAR/JPY SABR Calibration:
+(Implementation: Jan Obloj + Benaim/Dodgson/Kainth Smile Extrapolation)
 ![Smile](https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_ZARJPY_SE.png)
 
 
