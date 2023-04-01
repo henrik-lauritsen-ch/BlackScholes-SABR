@@ -3,6 +3,14 @@ Functionality to value FX options under Garman Kohlhagen and SABR
 
 
 ## BlackScholes.py
+
+This library contains the standard vanilla option pricing formula applied for FX trading, Garman-Kohlhagen, along with standard Greeks.
+
+The formula Garman-Kohlhagen formula for a vanilla Call option:
+
+![Garman-Kohlhagen](https://github.com/henrik-lauritsen-ch/Pictures/blob/main/garman-kohlhagen.png)
+
+
 **Classes:**
 ```
 
