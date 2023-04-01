@@ -43,30 +43,20 @@ class SABRVolSurface(FXVolSurface):
     def __init__(self, spot, domesticDeposit, foreignDeposit, expiryTerm, volatilitySmile, beta=0.85):
         super().__init__(spot, domesticDeposit, foreignDeposit, expiryTerm, volatilitySmile)
 
-        self._beta = beta       
-
-        if (expiryTerm <= 14/365):
-            self._vovol0 = 5
-        elif (expiryTerm <= 31/365):
-            self._vovol0 = 2
-        elif (expiryTerm <= 1.0):
-            self._vovol0 = 1.0
-        elif (expiryTerm <= 3.0):
-            self._vovol0 = 0.5
-        else:
-            self._vovol0 = 0.25
-        
-        self._vovol = np.nan        
-        self._vovolmin = np.nan
-        self._vovolmax = np.nan
-        
-        self._corr0 = np.nan
-        self._corr = np.nan
+        self._beta = beta              
         
         self._alpha0 = np.nan
         self._alpha = np.nan
         self._alphamin = np.nan
         self._alphamax = np.nan
+        
+        self._corr0 = np.nan
+        self._corr = np.nan
+        
+        self._vovol0 = np.nan
+        self._vovol = np.nan        
+        self._vovolmin = np.nan
+        self._vovolmax = np.nan
         
         self._sabrrr25 = np.nan
         
@@ -152,6 +142,18 @@ class SABRVolSurface(FXVolSurface):
 
 
     def SABRFirstGuess(self) -> None:
+                
+        if (self._expiryTerm <= 14/365):
+            self._vovol0 = 5
+        elif (self._expiryTerm <= 31/365):
+            self._vovol0 = 2
+        elif (self._expiryTerm <= 1.0):
+            self._vovol0 = 1.0
+        elif (self._expiryTerm <= 3.0):
+            self._vovol0 = 0.5
+        else:
+            self._vovol0 = 0.25
+                
                 
         # Initial guess and bounds on Max_Alpha given vovol found above and corr = 1.0 we find the upper bound of
         # alpha. We solve equation 9 in PP to establish this bound. Note, that as vovol is a guess then alpha may be
