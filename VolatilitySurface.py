@@ -95,7 +95,7 @@ class SABRVolSurface(FXVolSurface):
 
     def SabrImpliedVol(self, strike, alpha, corr, vovol, beta):  
         forward = sfd.ForwardContinuousDeposit(self._spot, self._domesticDeposit, self._foreignDeposit, self._expiryTerm)      
-        return self.I0_JObloj(strike, forward, alpha, corr, vovol, beta)*(1 + self.I1_Hagan(strike, forward, alpha, corr, vovol, beta)*self._expiryTerm)
+        return self.SabrImplVolFwd(strike, forward, alpha, corr, vovol, beta)
 
 
     # The I0_JObloj(), the I0() method from "Fine-tune your smile - correction to Hagan et. al." by Jan Oblój
