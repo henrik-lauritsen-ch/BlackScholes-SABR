@@ -69,11 +69,10 @@ Methods:
 
 
 ## The SABR Model
+<img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_model_v5.png" width=65% height=65%>
 
-<img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_model_v5.png" width=70% height=70%>
 
 
-**Classes/Methods:**
 
 ## VisualizeVolatilitySurfaceFunctionality.py
 The purpose of this library is to show application of the different methods implemented for FX Options
