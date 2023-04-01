@@ -69,7 +69,6 @@ Methods:
 
 
 ## The SABR Model
-**Implementation and Calibration of the SABR model:**
 
  ![Smile](https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_model.png)
 
