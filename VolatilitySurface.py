@@ -82,23 +82,29 @@ class SABRVolSurface(FXVolSurface):
         self._rr25 = smile_vec[3] - smile_vec[1]  
         self.SabrCalibration()
             
-        return self.SabrImpliedVol(strike, self._corr, self._vovol, self._alpha, self._beta)
+        return self.SabrImpliedVol(strike, self._alpha, self._corr, self._vovol, self._beta)
+  
+
+    def GetSABRVolatility(self, strike, alpha, corr, vovol, beta):
+        return self.SabrImpliedVol(strike, alpha, corr, vovol, beta)
 
 
-    def GetSABRVolatility(self, strike, alpha, beta, corr, vovol):
-        return self.SabrImpliedVol(strike,  corr, vovol, alpha, beta)
+    def SabrImplVolFwd(self, strike, forward, alpha, corr, vovol, beta):
+        return self.I0_JObloj(strike, forward, alpha, corr, vovol, beta)*(1 + self.I1_Hagan(strike, forward, alpha, corr, vovol, beta)*self._expiryTerm)
 
 
-    def SabrImpliedVol(self, strike, corr, vovol, alpha, beta):        
-        return self.I0_JObloj(strike, corr, vovol, alpha, beta)*(1 + self.I1_Hagan(strike, corr, vovol, alpha, beta)*self._expiryTerm)
+    def SabrImpliedVol(self, strike, alpha, corr, vovol, beta):  
+        forward = sfd.ForwardContinuousDeposit(self._spot, self._domesticDeposit, self._foreignDeposit, self._expiryTerm)      
+        return self.I0_JObloj(strike, forward, alpha, corr, vovol, beta)*(1 + self.I1_Hagan(strike, forward, alpha, corr, vovol, beta)*self._expiryTerm)
 
 
     # The I0_JObloj(), the I0() method from "Fine-tune your smile - correction to Hagan et. al." by Jan Oblój
-    def I0_JObloj(self, strike, corr, vovol, alpha, beta):               
-
-        forward = sfd.ForwardContinuousDeposit(self._spot, self._domesticDeposit, self._foreignDeposit, self._expiryTerm)
-        # atmStrike = self._strikes[2]
-        x = math.log(forward/strike)
+    def I0_JObloj(self, strike, forward, alpha, corr, vovol, beta):               
+        
+        if (forward !=0 and strike != 0):
+            x = math.log(forward/strike)
+        else:        
+            return None
         
         if (strike == forward):
             retval = alpha * math.pow(strike, (beta - 1))
@@ -118,9 +124,7 @@ class SABRVolSurface(FXVolSurface):
 
 
     # The I1_Hagan(), second term of the implied volatility formula (eq. 2.17a) in "Managing Smile Risk" by Hagan et. al
-    def I1_Hagan(self, strike, corr, vovol, alpha, beta):
-            
-        forward = sfd.ForwardContinuousDeposit(self._spot, self._domesticDeposit, self._foreignDeposit, self._expiryTerm)
+    def I1_Hagan(self, strike, forward, alpha, corr, vovol, beta):
         
         return (math.pow((beta - 1), 2)/24 * math.pow(alpha, 2) / math.pow(forward * strike, 1 - beta) + 
                 1/4 * corr * vovol * alpha * beta / math.pow(forward * strike, (1 - beta)/2) + 
@@ -134,15 +138,15 @@ class SABRVolSurface(FXVolSurface):
         # See equation 9 in "Fitting the smile - Smart parameters for SABR and Heston" 
         # by Pierre Gauthier and Pierre-Yves H. Rivaille, 2009 (PP)        
         ATMStrike = self._strikes[2]        
-        return self.SabrImpliedVol(ATMStrike, 0.9999, self._vovol0, x, self._beta) - self._ATMVol
+        return self.SabrImpliedVol(ATMStrike, x, 0.9999, self._vovol0, self._beta) - self._ATMVol
     
 
     # Input correlation and the difference between the SABR 25 delta risk-reversal and the quoted 25 delta risk
     # reversal is returned. This method is applied for a first guess of the SABR correlation parameter
     def FirstGuessCorrelation(self, x):
 
-        self._sabrrr25 = (self.SabrImpliedVol(self._strikes[3], x, self._vovol0, self._alpha0, self._beta) 
-                         -self.SabrImpliedVol(self._strikes[1], x, self._vovol0, self._alpha0, self._beta))
+        self._sabrrr25 = (self.SabrImpliedVol(self._strikes[3], self._alpha0, x, self._vovol0, self._beta) 
+                         -self.SabrImpliedVol(self._strikes[1], self._alpha0, x, self._vovol0, self._beta))
         
         return self._sabrrr25 - self._rr25
 
@@ -178,9 +182,9 @@ class SABRVolSurface(FXVolSurface):
         s = 0
         for i in range(5):
             
-            sabrvol = self.SabrImpliedVol(self._strikes[i], u.RealAxisToIntervalAB(v[0], -0.9999, 0.9999),
-                                                            u.RealAxisToIntervalAB(v[1], self._vovolmin, self._vovolmax),
-                                                            u.RealAxisToIntervalAB(v[2], self._alphamin, self._alphamax), 
+            sabrvol = self.SabrImpliedVol(self._strikes[i], u.RealAxisToIntervalAB(v[0], self._alphamin, self._alphamax),
+                                                            u.RealAxisToIntervalAB(v[1], -0.9999, 0.9999),
+                                                            u.RealAxisToIntervalAB(v[2], self._vovolmin, self._vovolmax),
                                                             self._beta)
             s += math.pow(sabrvol - self._volatilitySmile[i], 2) * self._calibrationWeights[i]
             
@@ -196,17 +200,17 @@ class SABRVolSurface(FXVolSurface):
         self.SABRFirstGuess()
         
         # Calibrate, parameters mapped to R3
-        x0 = np.array([u.IntervalABToRealAxis(self._corr0, -0.9999, 0.9999), 
-                       u.IntervalABToRealAxis(self._vovol0, self._vovolmin, self._vovolmax), 
-                       u.IntervalABToRealAxis(self._alpha0, self._alphamin, self._alphamax)])                
+        x0 = np.array([u.IntervalABToRealAxis(self._alpha0, self._alphamin, self._alphamax),
+                       u.IntervalABToRealAxis(self._corr0, -0.9999, 0.9999), 
+                       u.IntervalABToRealAxis(self._vovol0, self._vovolmin, self._vovolmax)])
         x_min = so.minimize(self.SABRCalibObject, x0, method='Powell', tol=0.0000001)
-        
         # print(x_min)
         
         # Map result back tp min/max intervals
-        self._corr = u.RealAxisToIntervalAB(x_min.x[0], -0.9999, 0.9999)
-        self._vovol= u.RealAxisToIntervalAB(x_min.x[1], self._vovolmin, self._vovolmax)
-        self._alpha = u.RealAxisToIntervalAB(x_min.x[2], self._alphamin, self._alphamax)      
+        self._alpha = u.RealAxisToIntervalAB(x_min.x[0], self._alphamin, self._alphamax)
+        self._corr = u.RealAxisToIntervalAB(x_min.x[1], -0.9999, 0.9999)
+        self._vovol= u.RealAxisToIntervalAB(x_min.x[2], self._vovolmin, self._vovolmax)
+        
         
         pass
 
