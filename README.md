@@ -73,7 +73,6 @@ class StrikeFromDelta: Method for calculating Strike-from-delta and ATM-strike
 ```
 ```
 Methods:
-
 - ForwardContinuousDeposit(spot, domesticDeposit, foreignDeposit, expiryTerm)
 ```
 
