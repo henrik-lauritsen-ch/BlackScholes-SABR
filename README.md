@@ -7,6 +7,7 @@ Functionality to value FX options under Garman Kohlhagen and SABR
 This library contains the standard vanilla option pricing formula applied for FX trading (Garman-Kohlhagen) along with standard Greeks.
 
 The Garman-Kohlhagen formula for a vanilla Call:
+
 <img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/gk_call_v5.png" width=65% height=65%>
 
 
