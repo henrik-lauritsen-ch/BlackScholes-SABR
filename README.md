@@ -8,7 +8,7 @@ This library contains the standard vanilla option pricing formula applied for FX
 
 The Garman-Kohlhagen formula for a vanilla Call:
 
-<img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/gk_call_v5.png" width=65% height=65%>
+<img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/gk_call_v6.png" width=65% height=65%>
 
 
 
