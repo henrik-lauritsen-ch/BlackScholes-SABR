@@ -18,7 +18,7 @@ and where
 
 
 
-![Garman-Kohlhagen](https://github.com/henrik-lauritsen-ch/Pictures/blob/main/gk_modelpara.png)
+![Garman-Kohlhagen](https://github.com/henrik-lauritsen-ch/Pictures/blob/main/gk_modelpara_s.png)
 
 Note: For a currency cross CCY1/CCY2 the second currency is considered the domestic currency and the first currency the foreign!
 
