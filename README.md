@@ -16,25 +16,11 @@ with
 
 and where 
 
-![Garman-Kohlhagen](https://github.com/henrik-lauritsen-ch/Pictures/blob/main/gk_discountfactor.png)
 
-![Garman-Kohlhagen](https://github.com/henrik-lauritsen-ch/Pictures/blob/main/gk_forward.png)
 
-S: FX Spot
+![Garman-Kohlhagen](https://github.com/henrik-lauritsen-ch/Pictures/blob/main/gk_modelpara_s.png)
 
-K: Strike
 
-t: today (can be set to zero)
-
-T: Maturity term (in years)
-
-r: Domestic deposit (continous, second currency)
-
-q: Foreign deposit (continous, first currency)
-
-N(): Standard cumulative normal distribution function
-
-sigma: traded implied volatility
 
 **Classes:**
 ```
@@ -50,7 +36,7 @@ class OptionType(enum.Enum): Put/Call
 
 
 ```
-class norm: Standard normal dentisity and distribution functions along with inverse normal
+class norm: Standard normal density and distribution functions along with inverse normal
 ```
 
 ```
@@ -69,21 +55,31 @@ Methods:
 **Classes/Methods:**
 
 ```
-class StrikeFromDelta:
+class FXVolSurface: Volatility surface that contains a smile for one Maturity only 
+(10dput, 10dput, atm, 10dcall, 10dcall). Constructor takes Interpolation(). Class 
+returns volatility given strike.
 
-- GetATMStrike(self, volatility)
-- GetStrikeFromDomesticDelta(self, delta, optiontype: bs.OptionType, volatility)
-- GetStrikeVector(self, volSmile)
-- GetLogMoneynessStrikeVector(self, volSmile)
+class SABRVolSurface(FXVolSurface): SABR volatility Surface. Calibrates smile to SABR 
+and returns implied SABR-Vol given strike.
+
 ```
 
+
+## StrikeFromDelta.py
+**Classes/Methods:**
+
+```
+class StrikeFromDelta: Method for calculating Strike-from-delta and ATM-strike
+```
 ```
 Methods:
 
 - ForwardContinuousDeposit(spot, domesticDeposit, foreignDeposit, expiryTerm)
 ```
 
-## SABR.py
+
+
+## The SABR Model
 **Implementation and Calibration of the SABR model:**
 
  ![Smile](https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr2_equations.png)
