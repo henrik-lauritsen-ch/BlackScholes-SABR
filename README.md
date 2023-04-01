@@ -41,7 +41,7 @@ class Interpolation: Piecewiese linear and Cubic-Splie
 ```
 Methods:
 - RealAxisToIntervalAB()
-- IntervalABToRealAxis
+- IntervalABToRealAxis()
 - FindIndex()
 - Bisection()
 ```
