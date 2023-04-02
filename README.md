@@ -16,11 +16,11 @@ Note: For a currency cross CCY1/CCY2 the second currency is considered the domes
 
 **Classes:**
 ```
-class Option: Option base class
+class GarmanKohlhagen: Option base class
 
-class Vanilla(Option): Garman-Kohlhagen method along with all Greeks
+class Vanilla(GarmanKohlhagen): Garman-Kohlhagen method along with all Greeks
 
-class Exotic(Option): Garman-Kohlhagen version of 1st generation FX exotics
+class Exotic(GarmanKohlhagen): Garman-Kohlhagen version of 1st generation FX exotics
 
 class OptionType(enum.Enum): Put/Call
 ```
