@@ -81,16 +81,19 @@ The purpose of this library is to show application of the different methods impl
 ### USD/JPY SABR Calibration:
 Implementation: Jan Obloj, Fine-Tune Your Smile Correction to Hagan et al
 
-<img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/USDJPY_Obloj_1.png" width=60% height=60%>
+<img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/USDJPY_Obloj_1.png" width=95% height=95%>
 
-<img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/USDJPY_Obloj_2.png" width=60% height=60%>
+<img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/USDJPY_Obloj_2.png" width=95% height=95%>
 
 
 
 ### ZAR/JPY SABR Calibration:
 Implementation: Jan Obloj, Fine-Tune Your Smile Correction to Hagan et al
 
-![Smile](https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_ZARJPY.png)
+<img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/ZARJPY_Obloj_1.png" width=95% height=95%>
+
+<img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/ZARJPY_Obloj_2.png" width=95% height=95%>
+
 
 ### ZAR/JPY SABR Calibration:
 Implementation: Jan Obloj + Benaim/Dodgson/Kainth Smile Extrapolation
