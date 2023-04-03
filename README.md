@@ -53,6 +53,10 @@ returns volatility given strike.
 class SABRVolSurface(FXVolSurface): SABR volatility Surface. Calibrates smile to SABR 
 and returns implied SABR-Vol given strike.
 
+class SABRWingVolSurface(SABRVolSurface): SABR volatility Surface. Calibrates smile to SABR.
+Extrapolate below 25dPut and above 25dCall using polynomial in prices. The GetVolatility
+methods returns implied SABR-Vol given strike.
+
 ```
 
 
