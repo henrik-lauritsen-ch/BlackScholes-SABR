@@ -31,7 +31,7 @@ class OptionType(enum.Enum): Put/Call
 ```
 class norm: Standard normal density and distribution functions along with inverse normal
 
-class Interpolation: Piecewiese linear and Cubic-Splie 
+class Interpolation: Piecewiese linear and Cubic-Spline 
 ```
 
 ```
