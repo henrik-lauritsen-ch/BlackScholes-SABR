@@ -14,9 +14,9 @@ class SABRWingSurface(vs.SABRVolSurface):
     def __init__(self, spot, domesticDeposit, foreignDeposit, expiryTerm, volatilitySmile, beta=0.85):
         super().__init__(spot, domesticDeposit, foreignDeposit, expiryTerm, volatilitySmile, beta)
     
-     # Strike and Vol are dummy values for the _bs object. This object is applied 
-        # for the wing-extrapolation calculation
-        self._bs = bs.Vanilla(spot, 1.0, expiryTerm, domesticDeposit, foreignDeposit, 0.1)        
+        # Strike and Vol are dummy values for the _bs object. This object is applied 
+        # for the wing-extrapolation calculation and these parameters are set at "run-time"
+        self._bs = bs.Vanilla(spot, 1.0, expiryTerm, domesticDeposit, foreignDeposit, 0.1)
         
         self._ny = np.nan
         self._acall = np.nan
@@ -29,15 +29,41 @@ class SABRWingSurface(vs.SABRVolSurface):
         self._cput = np.nan
 
         self._calibrationWeights = np.array([1.0, 2.0, 4.0, 2.0, 1.0])
-        self.SabrCalibration()
+        # Calibration done in GetVolatilityFromSmile as this will happen anyway at this time
     
     
     def GetVolatilityFromSmile(self, strike, smile_vec):
         
-        if (strike<self._strikes[1] or strike> self._strikes[3]):
-            return 1
+        self.SetVolatilitySmile(smile_vec)
+        self.SabrCalibration()
+        
+        if (strike < self._strikes[1] or strike > self._strikes[3]):
+            self.CalcWingParameters(self._strikes[0], self._strikes[1], self._strikes[4], self._strikes[3])
+            return self.GetImpliedWingVol(strike)
         else:
-            return super().GetVolatilityFromSmile(strike, smile_vec)
+            return self.SabrImpliedVol(strike, self._alpha, self._corr, self._vovol, self._beta)
+    
+    
+    def GetImpliedWingVol(self, strike):
+        
+        self._bs._strike = strike
+        optionType = bs.OptionType.Call
+        
+        if (strike < self._strikes[1]):
+            optionType = bs.OptionType.Put
+            price = self.PutExtrapolationFunction(strike)
+        else:
+            price = self.CallExtrapolationFunction(strike)
+        
+        return self._bs.GetImpliedVolatility(price, optionType)
+        
+            
+    def PutExtrapolationFunction(self, strike):    
+        return pow(strike, self._my)*(self._aput + self._bput*strike + self._cput*strike*strike)
+    
+    
+    def CallExtrapolationFunction(self, strike):    
+        return pow(strike, -self._ny)*(self._acall + self._bcall/strike + self._ccall/(strike*strike))
     
     
     def dI0dK(self, strike, forward, alpha, corr, vovol, beta):
@@ -138,7 +164,7 @@ class SABRWingSurface(vs.SABRVolSurface):
         return term1 + term2
 
 
-    def GetWingParameters(self, K10P, K25P, K10C, K25C):
+    def CalcWingParameters(self, K10P, K25P, K10C, K25C) -> None:
         
         #  Solve Put Wing
         put_matrix = np.array([[m.log(K25P), 1, K25P, K25P*K25P],
@@ -170,6 +196,9 @@ class SABRWingSurface(vs.SABRVolSurface):
         self._cput = put_solution[3]
         
         pass
+    
+    
+    
     
     
 #//     Unit-Test: SABR with wing extrapolation
