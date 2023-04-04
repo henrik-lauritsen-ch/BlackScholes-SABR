@@ -24,14 +24,6 @@ class GarmanKohlhagen:
         self._volatility = volatility
 
 
-class Exotic(GarmanKohlhagen):
-    def __init__(self, spot, strike, expiryTerm, depositDomestic, depositForeign, volatility, barrier, lowerBarrier=0):
-        super().__init__(spot, strike, expiryTerm, depositDomestic, depositForeign, volatility)
-
-        self._barrier = barrier
-        self.lowerBarrier = lowerBarrier
-
-
 class Vanilla(GarmanKohlhagen):  
     def __init__(self, spot, strike, expiryTerm, depositDomestic, depositForeign, volatility):
         super().__init__(spot, strike, expiryTerm, depositDomestic, depositForeign, volatility)
