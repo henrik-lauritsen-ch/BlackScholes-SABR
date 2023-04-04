@@ -81,7 +81,7 @@ Methods:
 
 **SABR Implementation:**
 
-<img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_implementation.png" width=65% height=65%>
+<img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_implementation_v1.png" width=65% height=65%>
 
 ## The SABRWing.py
 
