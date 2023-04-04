@@ -24,18 +24,45 @@ class FXVolSurface:
         self._ATMVol = volatilitySmile[2]
         self._rr25 = volatilitySmile[3] - volatilitySmile[1]
         self._sd = sfd.StrikeFromDelta(spot, domesticDeposit, foreignDeposit, expiryTerm)
-        
-        
+        self._strikes = np.nan
+
+
+    def SetExpiryTerm(self, expiryterm) -> None:
+        self._expiryTerm = expiryterm
+        self.CalcStrikeVector()
+        pass
+    
+    
+    def SetVolatilitySmile(self, volatilitysmile) -> None:    
+        self.UpdateVolatilities(volatilitysmile)
+        self.CalcStrikeVector()
+        pass
+    
+    
+    def UpdateVolatilities(self, volatilitysmile) -> None:
+        self._volatilitySmile
+        self._ATMVol = volatilitysmile[2]
+        self._rr25 = volatilitysmile[3] - volatilitysmile[1]
+        pass
+    
+    
     def GetVolatility(self, strike):        
         return self.GetVolatilityFromSmile(strike, self._volatilitySmile)
 
 
-    def GetVolatilityFromSmile(self, strike, smile_vec):        
-        atm_strike = self._sd.GetATMStrike(smile_vec[2])
-        moneyness_vec = self._sd.GetLogMoneynessStrikeVector(smile_vec)        
+    def GetVolatilityFromSmile(self, strike, smile_vec):
+        
+        self.SetVolatilitySmile(smile_vec)
+        atm_strike = self._strikes[2]
+        moneyness_vec = self._sd.GetLogMoneynessStrVec(self._strikes)
         x = m.log(strike/atm_strike)
 
         return self._volatilityInterpolation.GetInterpolatedValue(x, moneyness_vec, smile_vec)
+
+
+    def CalcStrikeVector(self) -> None:        
+        self._strikes = self._sd.GetStrikeVector(self._volatilitySmile)        
+        pass
 
 
 class SABRVolSurface(FXVolSurface):
@@ -55,18 +82,16 @@ class SABRVolSurface(FXVolSurface):
         self._vovolmin = np.nan
         self._vovolmax = np.nan
         
-        self._sabrrr25 = np.nan
-        self._strikes = np.nan
-        self.CalcStrikeVector(volatilitySmile)
+        self._sabrrr25 = np.nan        
+        
+        self.CalcStrikeVector()
         self._calibrationWeights = np.array([1.0, 1.0, 2.0, 1.0, 1.0])              
         self.SabrCalibration()
         
         
     def GetVolatilityFromSmile(self, strike, smile_vec):
         
-        self._volatilitySmile = smile_vec    
-        self._ATMVol = smile_vec[2]
-        self._rr25 = smile_vec[3] - smile_vec[1]  
+        self.SetVolatilitySmile(smile_vec)        
         self.SabrCalibration()
             
         return self.SabrImpliedVol(strike, self._alpha, self._corr, self._vovol, self._beta)
@@ -200,9 +225,6 @@ class SABRVolSurface(FXVolSurface):
 
     def SabrCalibration(self) -> None:
         
-        # Update _Strikes:
-        self.CalcStrikeVector(self._volatilitySmile)
-        
         # Pre-calibation - First guess on a solution
         self.SABRFirstGuess()
         
@@ -221,10 +243,7 @@ class SABRVolSurface(FXVolSurface):
         pass
 
 
-    def CalcStrikeVector(self, volatilitySmile) -> None:        
-        self._strikes = self._sd.GetStrikeVector(volatilitySmile)        
-        pass
-
+    
        
         
 #//     Unit-Test: Volatility Surface
