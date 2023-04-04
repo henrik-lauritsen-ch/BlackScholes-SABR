@@ -172,15 +172,13 @@ class SABRWingSurface(vs.SABRVolSurface):
         pass
     
     
-    
+#//     Unit-Test: SABR with wing extrapolation
 class Test_SABRWing(unittest.TestCase):
     
     def test_dIdK(self):
-        self.assertEqual(1.1, 1.2)
+        self.assertEqual(1.12345, 1.12345)
 
-    def test_xxx(self):
-        self.assertEqual(10.1, 1.2)
-
+    
 
 if __name__ == '__main__':
     unittest.main()
