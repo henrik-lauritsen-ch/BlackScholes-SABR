@@ -85,6 +85,15 @@ class StrikeFromDelta:
         return moneyness_vec
 
 
+    def GetLogMoneynessStrVec(self, strike_vec):
+                
+        atm_strike = strike_vec[2]
+        moneyness_vec = np.zeros(5)
+        
+        for i in range(5):
+            moneyness_vec[i] = math.log(strike_vec[i]/atm_strike)
+        
+        return moneyness_vec
 
 
 #//     Unit-Test: Volatility Surface
