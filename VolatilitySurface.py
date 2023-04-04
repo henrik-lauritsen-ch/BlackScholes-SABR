@@ -3,7 +3,7 @@
 
 """
 import BlackScholes as bs
-import math
+import math as m
 import Utility as u
 import unittest
 import numpy as np
@@ -33,7 +33,7 @@ class FXVolSurface:
     def GetVolatilityFromSmile(self, strike, smile_vec):        
         atm_strike = self._sd.GetATMStrike(smile_vec[2])
         moneyness_vec = self._sd.GetLogMoneynessStrikeVector(smile_vec)        
-        x = math.log(strike/atm_strike)
+        x = m.log(strike/atm_strike)
 
         return self._volatilityInterpolation.GetInterpolatedValue(x, moneyness_vec, smile_vec)
 
@@ -44,25 +44,22 @@ class SABRVolSurface(FXVolSurface):
         super().__init__(spot, domesticDeposit, foreignDeposit, expiryTerm, volatilitySmile)
 
         self._beta = beta              
-        
         self._alpha0 = np.nan
         self._alpha = np.nan
         self._alphamin = np.nan
         self._alphamax = np.nan
-        
         self._corr0 = np.nan
         self._corr = np.nan
-        
         self._vovol0 = np.nan
         self._vovol = np.nan        
         self._vovolmin = np.nan
         self._vovolmax = np.nan
         
         self._sabrrr25 = np.nan
-        
         self._strikes = np.nan
         self.CalcStrikeVector(volatilitySmile)
-        self._calibrationWeights = np.array([1.0, 1.0, 2.0, 1.0, 1.0])
+        self._calibrationWeights = np.array([1.0, 1.0, 2.0, 1.0, 1.0])              
+        self.SabrCalibration()
         
         
     def GetVolatilityFromSmile(self, strike, smile_vec):
@@ -85,35 +82,47 @@ class SABRVolSurface(FXVolSurface):
 
 
     # The I0_JObloj(), the I0() method from "Fine-tune your smile - correction to Hagan et. al." by Jan Oblój
-    def I0_JObloj(self, strike, forward, alpha, corr, vovol, beta):               
+    def I0_JObloj(self, strike, forward, alpha, corr, vovol, beta):
         
-        if (forward !=0 and strike != 0):
-            x = math.log(forward/strike)
-        else:        
-            return None
+        x = self.GetI0x(strike, forward)        
         
         if (strike == forward):
-            retval = alpha * math.pow(strike, (beta - 1))
+            retval = alpha * pow(strike, (beta - 1))
         elif ((vovol == 0.0) and (beta != 1.0)):
-            retval = x * alpha * (1 - beta) / (math.pow(forward, (1 - beta)) - math.pow(strike, (1 - beta)))
-        else:
-                  
-            if (beta == 1.0):
-                z = vovol * x / alpha
-            else:
-                z = (vovol / alpha) * (math.pow(forward, (1 - beta)) - math.pow(strike, (1 - beta)))/(1 - beta)
-
-            denominator = math.log((math.sqrt(1 - 2 * corr * z + z * z) + z - corr) / (1 - corr))
+            retval = x * alpha * (1 - beta) / (pow(forward, (1 - beta)) - pow(strike, (1 - beta)))
+        else:            
+            z = self.GetI0z(strike, forward, alpha, vovol, beta)            
+            denominator = m.log((m.sqrt(1 - 2 * corr * z + z * z) + z - corr) / (1 - corr))
             retval = vovol * x / denominator
 
         return retval
 
 
+    def GetI0z(self, strike, forward, alpha, vovol, beta):
+        
+        x = self.GetI0x(strike, forward)
+        
+        if (beta == 1.0):
+            z = vovol * x / alpha
+        else:
+            z = (vovol / alpha) * (pow(forward, (1 - beta)) - pow(strike, (1 - beta)))/(1 - beta)
+
+        return z
+    
+    
+    def GetI0x(self, strike, forward):
+        
+        try:
+            return m.log(forward/strike)
+        except:        
+            raise ValueError('Divide with zero or ln(0): SABRVolSur->GEtI0x')
+        
+        
     # The I1_Hagan(), second term of the implied volatility formula (eq. 2.17a) in "Managing Smile Risk" by Hagan et. al
     def I1_Hagan(self, strike, forward, alpha, corr, vovol, beta):
         
-        return (math.pow((beta - 1), 2)/24 * math.pow(alpha, 2) / math.pow(forward * strike, 1 - beta) + 
-                1/4 * corr * vovol * alpha * beta / math.pow(forward * strike, (1 - beta)/2) + 
+        return (pow((beta - 1), 2)/24 * pow(alpha, 2) / pow(forward * strike, 1 - beta) + 
+                1/4 * corr * vovol * alpha * beta / pow(forward * strike, (1 - beta)/2) + 
                 (2 - 3 * corr * corr) / 24 * vovol * vovol)
 
 
@@ -156,7 +165,7 @@ class SABRVolSurface(FXVolSurface):
         # larger than the alpha established as the max alpha. For that reason we chooes alphamax = alpha *1.2
         self._alpha0 = u.bisection(self.FirstGuessAlphaMax, self._ATMVol/2.0, self._ATMVol*3.0, 0.00001, 10)
         self._alphamin = self._alpha0 * 0.7       
-        self._alphamax = self._alpha0 * 1.5
+        self._alphamax = self._alpha0 * 1.2
                
         self._corr0=0
         while (self._corr0==0):
@@ -184,7 +193,7 @@ class SABRVolSurface(FXVolSurface):
                                                             u.RealAxisToIntervalAB(v[1], -0.9999, 0.9999),
                                                             u.RealAxisToIntervalAB(v[2], self._vovolmin, self._vovolmax),
                                                             self._beta)
-            s += math.pow(sabrvol - self._volatilitySmile[i], 2) * self._calibrationWeights[i]
+            s += pow(sabrvol - self._volatilitySmile[i], 2) * self._calibrationWeights[i]
             
         return s
         
@@ -209,7 +218,6 @@ class SABRVolSurface(FXVolSurface):
         self._corr = u.RealAxisToIntervalAB(x_min.x[1], -0.9999, 0.9999)
         self._vovol= u.RealAxisToIntervalAB(x_min.x[2], self._vovolmin, self._vovolmax)
         
-        
         pass
 
 
@@ -217,8 +225,8 @@ class SABRVolSurface(FXVolSurface):
         self._strikes = self._sd.GetStrikeVector(volatilitySmile)        
         pass
 
-
-
+       
+        
 #//     Unit-Test: Volatility Surface
 class Test_VolSurface(unittest.TestCase):
    
