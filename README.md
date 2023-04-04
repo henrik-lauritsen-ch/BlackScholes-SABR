@@ -107,14 +107,14 @@ Implementation: Jan Obloj, Fine-Tune Your Smile Correction to Hagan et al
 <img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/ZARJPY_Obloj_2.png" width=100% height=100%>
 
 
-### ZAR/JPY SABR Calibration:
+### ZAR/JPY SABRWing Calibration:
 Implementation: Jan Obloj + Benaim/Dodgson/Kainth (Wing extrapolation)
 
 ![Smile](https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_ZARJPY_SE.png)
 
 
 
-### CHF/DKK SABR Calibration:
+### CHF/DKK SABRWing Calibration:
 Implementation: Jan Obloj + Benaim/Dodgson/Kainth (Wing extrapolation)
 
 ![Smile](https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_CHFDKK.png)
