@@ -3,7 +3,7 @@
 
 """
 
-import math
+import math as m
 import Utility as u 
 import enum
 import unittest
@@ -14,7 +14,7 @@ class OptionType(enum.Enum):
     Call = 2
 
 
-class Vanilla:  
+class GarmanKohlhagen:
     def __init__(self, spot, strike, expiryTerm, depositDomestic, depositForeign, volatility):
         self._spot = spot
         self._strike = strike
@@ -23,6 +23,18 @@ class Vanilla:
         self._depositForeign = depositForeign
         self._volatility = volatility
 
+
+class Exotic(GarmanKohlhagen):
+    def __init__(self, spot, strike, expiryTerm, depositDomestic, depositForeign, volatility, barrier, lowerBarrier=0):
+        super().__init__(spot, strike, expiryTerm, depositDomestic, depositForeign, volatility)
+
+        self._barrier = barrier
+        self.lowerBarrier = lowerBarrier
+
+
+class Vanilla(GarmanKohlhagen):  
+    def __init__(self, spot, strike, expiryTerm, depositDomestic, depositForeign, volatility):
+        super().__init__(spot, strike, expiryTerm, depositDomestic, depositForeign, volatility)
 
     def Getd1(self, volatility):     
         s0 = self._spot
@@ -33,14 +45,14 @@ class Vanilla:
         T = self._expiryTerm
         
         if (s0>0 and K>0 and vol>0 and T>0):
-            d1 = (math.log(s0/K) + (r - d + 0.5*vol*vol)*T)/(vol*math.sqrt(T))
+            d1 = (m.log(s0/K) + (r - d + 0.5*vol*vol)*T)/(vol*m.sqrt(T))
         else:
             d1 = 0.0       
         return d1
         
     
     def Getd2(self, volatility):
-        return self.Getd1(volatility) - volatility*math.sqrt(self._expiryTerm)
+        return self.Getd1(volatility) - volatility*m.sqrt(self._expiryTerm)
 
 
     def GetBaseOptionValue(self, optionType: OptionType, volatility):
@@ -56,7 +68,7 @@ class Vanilla:
         if (optionType == OptionType.Put):
             sign = -1.0;
         
-        return sign * (math.exp(-d * T) * s0 * u.norm().cdf(sign * d1) - math.exp(-r * T) * K * u.norm().cdf(sign * d2))
+        return sign * (m.exp(-d * T) * s0 * u.norm().cdf(sign * d1) - m.exp(-r * T) * K * u.norm().cdf(sign * d2))
 
 
     def GetOptionValue(self, optionType: OptionType):        
@@ -86,7 +98,7 @@ class Vanilla:
         d1 = self.Getd1(self._volatility)
         signPhi_d1 = u.norm().cdf(sign * d1)
 
-        return sign * math.exp(-q * self._expiryTerm) * signPhi_d1
+        return sign * m.exp(-q * self._expiryTerm) * signPhi_d1
 
 
     def GetGamma(self):
@@ -94,27 +106,50 @@ class Vanilla:
         d1 = self.Getd1(self._volatility)
         phi_d1 = u.norm().pdf(d1)
         variance = self._volatility * self._volatility * self._expiryTerm
-        rootVariance = math.sqrt(variance)
+        rootVariance = m.sqrt(variance)
 
         if ((self._volatility > 0.0) and (self._expiryTerm > 0.0) and (self._spot > 0.0)):
-            retval = 1.0 / (rootVariance * self._spot) * math.exp(- self._depositForeign * self._expiryTerm) * phi_d1
+            retval = 1.0 / (rootVariance * self._spot) * m.exp(- self._depositForeign * self._expiryTerm) * phi_d1
         else:
             raise ValueError("Expiry term + volatility + spot needs to be positive - GarmanKohlhagen->Vanilla->GetGamma")
 
         return retval
 
+    def GetDualDelta(self, optiontype: OptionType):
+        d2 = self.Getd2(self._volatility)
+        
+        sign = 1.0
+        if (optiontype == OptionType.Put):
+            sign = -1.0
+        
+        return -sign*m.exp(-self._depositDomestic*self._expiryTerm)*u.norm().cdf(d2)
 
+
+    def GetDualGamma(self):
+        d2 = self.Getd2(self._volatility)
+        try:
+            return m.exp(-self._depositDomestic*self._expiryTerm)*u.norm().pdf(d2)/(self._strike*self._volatility*m.sqrt(self._expiryTerm))
+        except:     
+            raise ValueError('Divide with zero: GarmanKohlhagen->Vanilla->GetDualGamma')
+    
+    
+    def GetDualVega(self):
+        
+        # Dual Vega = dVega/dStrike
+        d1 = self.Getd1(self._volatility)
+        return self._spot/self._strike*m.exp(-self._depositForeign*self._expiryTerm)*d1/self._volatility*u.norm().pdf(d1)
+    
+    
     def GetVega(self):
-        retval = 0 
+        
         d1 = self.Getd1(self._volatility)
         phi_d1 = u.norm().pdf(d1)
 
         if (self._expiryTerm > 0.0):
-            retval = self._spot * math.exp(- self._depositForeign * self._expiryTerm) * math.sqrt(self._expiryTerm) * phi_d1
+            return self._spot * m.exp(- self._depositForeign * self._expiryTerm) * m.sqrt(self._expiryTerm) * phi_d1
         else:
             raise ValueError("Expiry term + volatility needs to be positive - GarmanKohlhagen->Vanilla->GetVega")
 
-        return retval
 
 
     def GetVolga(self):
@@ -124,7 +159,7 @@ class Vanilla:
         phi_d1 = u.norm().pdf(d1)
 
         if (self._volatility > 0.0 and self._expiryTerm > 0.0):
-            retval = self._spot / self._volatility * math.exp(- self._depositForeign * self._expiryTerm) * math.sqrt(self._expiryTerm) * d1 * d2 * phi_d1
+            retval = self._spot / self._volatility * m.exp(- self._depositForeign * self._expiryTerm) * m.sqrt(self._expiryTerm) * d1 * d2 * phi_d1
         else:
             raise ValueError("Expiry term + volatility needs to be positive - GarmanKohlhagen->Vanilla->GetVolga")
 
@@ -138,7 +173,7 @@ class Vanilla:
         phi_d1 = u.norm().pdf(d1)
 
         if (self._volatility > 0.0 and self._expiryTerm > 0.0):
-            retval = -math.exp(-self._depositForeign * self._expiryTerm) * d2 / self._volatility * phi_d1;
+            retval = -m.exp(-self._depositForeign * self._expiryTerm) * d2 / self._volatility * phi_d1;
         else:
             raise ValueError("Expiry term + volatility needs to be positive - GarmanKohlhagen->Vanilla->GetVanna")
 
@@ -161,9 +196,9 @@ class Vanilla:
             phi_d1 = u.norm().pdf(d1)
             Phi_d2 = u.norm().cdf(sign * d2)
 
-            retval = (-self._spot * math.exp(-self._depositForeign * self._expiryTerm) * phi_d1 * self._volatility / (2 * math.sqrt(self._expiryTerm)) 
-            + sign * self._depositForeign * self._spot * Phi_d1 * math.exp(-self._depositForeign * self._expiryTerm) 
-            - sign * self._depositDomestic * self._strike * math.exp(-self._depositDomestic * self._expiryTerm) * Phi_d2)
+            retval = (-self._spot * m.exp(-self._depositForeign * self._expiryTerm) * phi_d1 * self._volatility / (2 * m.sqrt(self._expiryTerm)) 
+            + sign * self._depositForeign * self._spot * Phi_d1 * m.exp(-self._depositForeign * self._expiryTerm) 
+            - sign * self._depositDomestic * self._strike * m.exp(-self._depositDomestic * self._expiryTerm) * Phi_d2)
 
         else:
             raise ValueError("Expiry term + volatility needs to be positive - GarmanKohlhagen->Vanilla->GetTheta")
@@ -172,7 +207,7 @@ class Vanilla:
 
 
 
-#//     Unit-Test: Garmankohlhagen Vanilla Class
+#//     Unit-Test: Garmankohlhagen->Vanilla Class
 class TestBSMethods(unittest.TestCase):
 
     bs = Vanilla(45.451, 46, 0.876, 0.054, 0.1, 0.18)
@@ -200,6 +235,12 @@ class TestBSMethods(unittest.TestCase):
     
     def test_GetImpliedVolatility(self):        
         self.assertEqual(round(self.bs.GetImpliedVolatility(4.206984, OptionType.Put), 4), 0.1854)
+        
+    def test_GetDualDelta(self):
+        self.assertEqual( round(self.bs.GetDualDelta(OptionType.Call), 12), round(-0.330524888341401, 12))
+        
+    def test_GetDualGamma(self):
+        self.assertEqual( round(self.bs.GetDualGamma(), 12), round(0.0454209823850242, 12))
 
 if __name__ == '__main__':
     unittest.main()
