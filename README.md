@@ -23,7 +23,7 @@ class Vanilla(GarmanKohlhagen): Garman-Kohlhagen method along with all Greeks
 class OptionType(enum.Enum): Put/Call
 ```
 
-## BlackScholes.py/ExoticFX.py
+## ExoticFX.py
 
 **Classes:**
 ```
