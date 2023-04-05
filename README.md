@@ -2,7 +2,7 @@
 Functionality to value FX options under Garman Kohlhagen and SABR
 
 
-## BlackScholes.py/ExoticFX.py
+## BlackScholes.py
 
 This library contains the standard vanilla option pricing formula applied for FX trading (Garman-Kohlhagen) along with standard Greeks.
 
@@ -20,10 +20,19 @@ class GarmanKohlhagen: Option base class
 
 class Vanilla(GarmanKohlhagen): Garman-Kohlhagen method along with all Greeks
 
-class Exotic(GarmanKohlhagen): Garman-Kohlhagen version of 1st generation FX exotics
-
 class OptionType(enum.Enum): Put/Call
 ```
+
+## BlackScholes.py/ExoticFX.py
+
+**Classes:**
+```
+class Exotic(GarmanKohlhagen): Garman-Kohlhagen version of 1st generation FX exotics
+
+class ExoticType(enum.Enum): ...
+```
+
+
 
 ## Utility.py
 **Classes/Methods:**
@@ -42,7 +51,7 @@ Methods:
 - Bisection()
 ```
 
-## VolatilitySurface.py/SABRWing.py
+## VolatilitySurface.py
 **Classes/Methods:**
 
 ```
