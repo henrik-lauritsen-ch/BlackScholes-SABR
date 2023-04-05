@@ -42,7 +42,7 @@ Methods:
 - Bisection()
 ```
 
-## VolatilitySurface.py
+## VolatilitySurface.py/SABRWing.py
 **Classes/Methods:**
 
 ```
