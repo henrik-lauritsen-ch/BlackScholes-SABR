@@ -40,7 +40,7 @@ class FXVolSurface:
     
     
     def UpdateVolatilities(self, volatilitysmile) -> None:
-        self._volatilitySmile
+        self._volatilitySmile = volatilitysmile
         self._ATMVol = volatilitysmile[2]
         self._rr25 = volatilitysmile[3] - volatilitysmile[1]
         pass
@@ -91,8 +91,9 @@ class SABRVolSurface(FXVolSurface):
         
     def GetVolatilityFromSmile(self, strike, smile_vec):
         
-        self.SetVolatilitySmile(smile_vec)        
-        self.SabrCalibration()
+        if ((smile_vec != self._volatilitySmile).all):
+            self.SetVolatilitySmile(smile_vec)        
+            self.SabrCalibration()
             
         return self.SabrImpliedVol(strike, self._alpha, self._corr, self._vovol, self._beta)
   
