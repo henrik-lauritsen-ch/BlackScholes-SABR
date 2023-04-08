@@ -46,21 +46,29 @@ class Vanilla(GarmanKohlhagen):
     def Getd2(self, volatility):
         return self.Getd1(volatility) - volatility*m.sqrt(self._expiryTerm)
 
-
-    def GetBaseOptionValue(self, optionType: OptionType, volatility):
-        s0 = self._spot
-        K = self._strike 
+    def GetOptionValueSVO(self, strike, volatility, optionType: OptionType):
+        
+        self._strike = strike
+        s0 = self._spot        
         r = self._depositDomestic
         d = self._depositForeign
         T = self._expiryTerm
         d1 = self.Getd1(volatility)
         d2 = self.Getd2(volatility)
         
-        sign = 1.0;
+        sign = 1.0
         if (optionType == OptionType.Put):
-            sign = -1.0;
+            sign = -1.0
         
-        return sign * (m.exp(-d * T) * s0 * u.norm().cdf(sign * d1) - m.exp(-r * T) * K * u.norm().cdf(sign * d2))
+        return sign * (m.exp(-d * T) * s0 * u.norm().cdf(sign * d1) - m.exp(-r * T) * strike * u.norm().cdf(sign * d2))
+
+    
+    def GetBaseOptionValue(self, optionType: OptionType, volatility):        
+        return self.GetOptionValueSVO(self._strike, volatility, optionType)
+
+
+    def GetOptionValue(self, optionType: OptionType):        
+        return self.GetBaseOptionValue(optionType, self._volatility)
 
 
     def GetOptionValue(self, optionType: OptionType):        
@@ -107,14 +115,16 @@ class Vanilla(GarmanKohlhagen):
 
         return retval
 
+
     def GetDualDelta(self, optiontype: OptionType):
+        
         d2 = self.Getd2(self._volatility)
         
         sign = 1.0
         if (optiontype == OptionType.Put):
             sign = -1.0
         
-        return -sign*m.exp(-self._depositDomestic*self._expiryTerm)*u.norm().cdf(d2)
+        return -sign*m.exp(-self._depositDomestic*self._expiryTerm)*u.norm().cdf(sign*d2)
 
 
     def GetDualGamma(self):
@@ -165,7 +175,7 @@ class Vanilla(GarmanKohlhagen):
         phi_d1 = u.norm().pdf(d1)
 
         if (self._volatility > 0.0 and self._expiryTerm > 0.0):
-            retval = -m.exp(-self._depositForeign * self._expiryTerm) * d2 / self._volatility * phi_d1;
+            retval = -m.exp(-self._depositForeign * self._expiryTerm) * d2 / self._volatility * phi_d1
         else:
             raise ValueError("Expiry term + volatility needs to be positive - GarmanKohlhagen->Vanilla->GetVanna")
 
@@ -179,7 +189,7 @@ class Vanilla(GarmanKohlhagen):
             
             sign = 1.0            
             if (optiontype == OptionType.Put):
-                sign = -1.0;
+                sign = -1.0
 
             d1 = self.Getd1(self._volatility)
             d2 = self.Getd2(self._volatility)
