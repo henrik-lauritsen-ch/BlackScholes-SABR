@@ -20,10 +20,19 @@ class GarmanKohlhagen: Option base class
 
 class Vanilla(GarmanKohlhagen): Garman-Kohlhagen method along with all Greeks
 
-class Exotic(GarmanKohlhagen): Garman-Kohlhagen version of 1st generation FX exotics
-
 class OptionType(enum.Enum): Put/Call
 ```
+
+## ExoticFX.py
+
+**Classes:**
+```
+class Exotic(GarmanKohlhagen): Garman-Kohlhagen version of 1st generation FX exotics
+
+class ExoticType(enum.Enum): ...
+```
+
+
 
 ## Utility.py
 **Classes/Methods:**
@@ -31,7 +40,7 @@ class OptionType(enum.Enum): Put/Call
 ```
 class norm: Standard normal density and distribution functions along with inverse normal
 
-class Interpolation: Piecewiese linear and Cubic-Splie 
+class Interpolation: Piecewiese linear and Cubic-Spline 
 ```
 
 ```
