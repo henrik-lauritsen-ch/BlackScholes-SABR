@@ -32,7 +32,6 @@ class SABRWingSurface(vs.SABRVolSurface):
         self.SabrCalibration()
         self.CalcWingParameters(self._strikes[0], self._strikes[1], self._strikes[4], self._strikes[3])
     
-        # print(self._my, self._aput, self._bput, self._cput)
     
     def GetVolatilityFromSmile(self, strike, smile_vec):
         
@@ -42,7 +41,6 @@ class SABRWingSurface(vs.SABRVolSurface):
             self.CalcWingParameters(self._strikes[0], self._strikes[1], self._strikes[4], self._strikes[3])
                       
         if (strike < self._strikes[1] or strike > self._strikes[3]):            
-            # self.CalcWingParameters(self._strikes[0], self._strikes[1], self._strikes[4], self._strikes[3])
             return self.GetImpliedWingVol(strike)
         else:
             return self.SabrImpliedVol(strike, self._alpha, self._corr, self._vovol, self._beta)
