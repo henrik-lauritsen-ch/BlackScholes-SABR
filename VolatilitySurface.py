@@ -25,12 +25,6 @@ class FXVolSurface:
         self._rr25 = volatilitySmile[3] - volatilitySmile[1]
         self._sd = sfd.StrikeFromDelta(spot, domesticDeposit, foreignDeposit, expiryTerm)
         self._strikes = np.nan
-
-
-    def SetExpiryTerm(self, expiryterm) -> None:
-        self._expiryTerm = expiryterm
-        self.CalcStrikeVector()
-        pass
     
     
     def SetVolatilitySmile(self, volatilitysmile) -> None:    
