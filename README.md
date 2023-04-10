@@ -94,6 +94,19 @@ Methods:
 <img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_implementation_v2.png" width=65% height=65%>
 
 ## The SABRWing.py
+<img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_put_wing1.png" width=65% height=65%>
+
+<img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_put_wing22.png" width=65% height=65%>
+
+<img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_put_wing3.png" width=65% height=65%>
+
+<img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_put_wing4.png" width=65% height=65%>
+
+<img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_call_wing_extrapolation.png" width=65% height=65%>
+
+
+Benaim/Dodgson/Kainth suggest ways of dealing with possible arbitrage on the smile and even an alternative solution. These topics have not been taken into account in this Python implementation.
+
 
 
 ## VisualizeVolatilitySurfaceFunctionality.py
@@ -117,14 +130,26 @@ Implementation: Jan Obloj, Fine-Tune Your Smile Correction to Hagan et al
 
 
 ### ZAR/JPY SABRWing Calibration:
-Implementation: Jan Obloj + Benaim/Dodgson/Kainth (Wing extrapolation)
+Below we compare the Jan Obloj to the Benaim/Dodgson/Kainth (Wing extrapolation). The implied reisk neutral distribution have caclulated for all four interpolation methods. Obvious that piecewise linear interpolation leads to an unacceptable distribution function.
 
-![Smile](https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_ZARJPY_SE.png)
+Clearly a smile like the 2008 ZAR/JPY show the need for more complex volatility modelling.
+
+<img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_ZARJPY_Wing.png" width=70% height=70%>
+
+<img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_ZARJPY_PDF.png" width=70% height=70%>
+
+
 
 
 
 ### CHF/DKK SABRWing Calibration:
 Implementation: Jan Obloj + Benaim/Dodgson/Kainth (Wing extrapolation)
 
-![Smile](https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_CHFDKK.png)
+The need for a more complex volatility model is less imminent for a smile like CHF/DKK as the graphs below show.
 
+
+<img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_CHFDKK_Wing.png" width=100% height=100%>
+
+<img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_CHFDKK_PDF.png" width=100% height=100%>
+
+ 
