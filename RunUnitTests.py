@@ -10,8 +10,7 @@ from BlackScholes import TestBSMethods
 def load_tests(loader, tests, pattern):
 # Load Test Classes
 
-    suite = unittest.TestSuite()
-        
+    suite = unittest.TestSuite()       
     suite.addTests(loader.loadTestsFromModule(Test_StrikeFromDelta()))
     suite.addTests(loader.loadTestsFromModule(Test_Utility()))
     suite.addTests(loader.loadTestsFromModule(Test_VolSurface()))
@@ -19,6 +18,7 @@ def load_tests(loader, tests, pattern):
     suite.addTests(loader.loadTestsFromModule(TestBSMethods()))    
     
     return suite
+
 
 if __name__ == '__main__':
     unittest.main()
