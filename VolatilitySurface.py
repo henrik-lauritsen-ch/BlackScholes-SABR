@@ -85,7 +85,8 @@ class SABRVolSurface(FXVolSurface):
         
     def GetVolatilityFromSmile(self, strike, smile_vec):
         
-        if ((smile_vec != self._volatilitySmile).all):
+        if (smile_vec != self._volatilitySmile).any():
+        # if ((smile_vec != self._volatilitySmile).all):
             self.SetVolatilitySmile(smile_vec)        
             self.SabrCalibration()
             
@@ -244,6 +245,7 @@ class SABRVolSurface(FXVolSurface):
 #//     Unit-Test: Volatility Surface
 class Test_VolSurface(unittest.TestCase):
    
+    print('Running Test_VolSurface testing ')
     def test_FXVolSurface_CSI(self):
         vs_vec = np.array([0.117885, 0.1191, 0.1300, 0.1501, 0.174995])        
         csi = u.CubicSplineInterpolation(True)
