@@ -94,7 +94,13 @@ Methods:
 <img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_implementation_v2.png" width=65% height=65%>
 
 ## The SABRWing.py
+<img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_put_wing1.png" width=65% height=65%>
 
+<img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_put_wing2.png" width=65% height=65%>
+
+<img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_put_wing3.png" width=65% height=65%>
+
+<img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_put_wing4.png" width=65% height=65%>
 
 ## VisualizeVolatilitySurfaceFunctionality.py
 The purpose of this library is to show application of the different methods implemented for FX Options
