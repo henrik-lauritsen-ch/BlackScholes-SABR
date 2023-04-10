@@ -85,8 +85,7 @@ class SABRVolSurface(FXVolSurface):
         
     def GetVolatilityFromSmile(self, strike, smile_vec):
         
-        if (smile_vec != self._volatilitySmile).any():
-        # if ((smile_vec != self._volatilitySmile).all):
+        if (smile_vec != self._volatilitySmile).any():        
             self.SetVolatilitySmile(smile_vec)        
             self.SabrCalibration()
             
