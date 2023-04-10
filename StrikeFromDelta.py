@@ -52,7 +52,7 @@ class StrikeFromDelta:
         if (z>=1.0):
             raise ValueError('No solution for this delta and/or these parameters')
         
-        norm_inverse = u.norm().InverseCdf(z)
+        norm_inverse = u.Norm().InverseCdf(z)
         forward = ForwardContinuousDeposit(self._spot, self._domesticDeposit, self._foreignDeposit, self._expiryTerm)
         
         if (volatility>2):
