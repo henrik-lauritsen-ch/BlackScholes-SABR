@@ -26,7 +26,7 @@ ZAR/JPY	Spot	11.7336
 
 
 """
-
+import unittest
 import pandas as pd
 import numpy as np
 import BlackScholes as bs
@@ -137,4 +137,6 @@ ax.set_ylabel('pdf-function')
 ax.legend()
 ax.grid(True)
 
-# plt.show()
+plt.show()
+
+
