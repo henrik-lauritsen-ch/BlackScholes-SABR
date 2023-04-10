@@ -38,7 +38,7 @@ class ExoticType(enum.Enum): ...
 **Classes/Methods:**
 
 ```
-class norm: Standard normal density and distribution functions along with inverse normal
+class Norm: Standard normal density and distribution functions along with inverse normal
 
 class Interpolation: Piecewiese linear and Cubic-Spline 
 ```
