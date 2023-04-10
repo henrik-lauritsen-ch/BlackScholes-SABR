@@ -38,7 +38,7 @@ class ExoticType(enum.Enum): ...
 **Classes/Methods:**
 
 ```
-class norm: Standard normal density and distribution functions along with inverse normal
+class Norm: Standard normal density and distribution functions along with inverse normal
 
 class Interpolation: Piecewiese linear and Cubic-Spline 
 ```
@@ -96,7 +96,7 @@ Methods:
 ## The SABRWing.py
 <img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_put_wing1.png" width=65% height=65%>
 
-<img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_put_wing22.png" width=65% height=65%>
+<img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_put_wing23.png" width=65% height=65%>
 
 <img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_put_wing3.png" width=65% height=65%>
 
