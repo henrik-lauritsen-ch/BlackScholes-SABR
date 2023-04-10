@@ -486,8 +486,7 @@ def g(x):
     return 2*x - 8.2468642
 
 class Test_Utility(unittest.TestCase):
-    
-    print('Running Test_Utility testing ')
+        
     def test_Bisection(self):
         self.assertEqual(round(bisection(g, 0, 7, 0.00000001) , 7), round(4.1234321, 7))
 
