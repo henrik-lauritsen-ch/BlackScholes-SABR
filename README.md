@@ -143,5 +143,8 @@ Below we compare the Jan Obloj to the Benaim/Dodgson/Kainth (Wing extrapolation)
 ### CHF/DKK SABRWing Calibration:
 Implementation: Jan Obloj + Benaim/Dodgson/Kainth (Wing extrapolation)
 
-![Smile](https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_CHFDKK.png)
+<img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_CHFDKK_Wing.png" width=70% height=70%>
+
+<img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_CHFDKK_PDF.png" width=70% height=70%>
+
 
