@@ -102,6 +102,10 @@ Methods:
 
 <img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_put_wing4.png" width=65% height=65%>
 
+
+Benaim/Dodgson/Kainth suggest suggest ways of dealing with possible arbitrage on the smile and even an alternative solution. These topics have not been taken into account in this Python implementation.
+
+
 ## VisualizeVolatilitySurfaceFunctionality.py
 The purpose of this library is to show application of the different methods implemented for FX Options
 
