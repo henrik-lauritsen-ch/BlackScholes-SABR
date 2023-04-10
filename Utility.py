@@ -104,7 +104,7 @@ def bisection(func, x1, x2, x_accuracy, JMAX = 40):
     return rtb
 
     
-class norm:    
+class Norm:    
     
     def __init__(self) -> None:
         pass
@@ -491,16 +491,16 @@ class Test_Utility(unittest.TestCase):
         self.assertEqual(round(bisection(g, 0, 7, 0.00000001) , 7), round(4.1234321, 7))
 
     def test_ICdf(self):
-        self.assertEqual(round(norm().cdfI(2.134), 8), round(0.983578609590808, 8))
+        self.assertEqual(round(Norm().cdfI(2.134), 8), round(0.983578609590808, 8))
        
     def test_MCdf(self):
-        self.assertEqual(round(norm().cdfM(3.0), 8), round(0.998650032777765, 8))
+        self.assertEqual(round(Norm().cdfM(3.0), 8), round(0.998650032777765, 8))
 
     def test_InverseCdf(self):
-        self.assertEqual(round(norm().InverseCdf(0.9752), 8), round(1.96339753624734, 8))
+        self.assertEqual(round(Norm().InverseCdf(0.9752), 8), round(1.96339753624734, 8))
     
     def test_Moro(self):
-        self.assertEqual(round(norm().Moro(0.9752), 8), round(1.96339753624734, 8))        
+        self.assertEqual(round(Norm().Moro(0.9752), 8), round(1.96339753624734, 8))        
 
     def test_CubicSplineInterpolation(self):
         xs = np.array([9.796265875871027, 10.067098505250692, 10.356101824110898, 10.687697656702378, 11.069582777590423])
