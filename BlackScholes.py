@@ -211,8 +211,7 @@ class Vanilla(GarmanKohlhagen):
 
 #//     Unit-Test: Garmankohlhagen->Vanilla Class
 class TestBSMethods(unittest.TestCase):
-
-    print('Running BlackScholes testing ')
+    
     bs = Vanilla(45.451, 46, 0.876, 0.054, 0.1, 0.18)
     
     def test_GetOptionValue(self):    
