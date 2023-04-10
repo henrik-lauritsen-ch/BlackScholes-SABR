@@ -131,7 +131,7 @@ Below we compare the Jan Obloj to the Benaim/Dodgson/Kainth (Wing extrapolation)
 
 <img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_ZARJPY_Wing.png" width=70% height=70%>
 
-<img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_ZARJPY_PDF" width=70% height=70%>
+<img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_ZARJPY_PDF.png" width=70% height=70%>
 
 
 
