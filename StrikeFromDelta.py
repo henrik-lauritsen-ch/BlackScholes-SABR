@@ -99,7 +99,6 @@ class StrikeFromDelta:
 #//     Unit-Test: Volatility Surface
 class Test_StrikeFromDelta(unittest.TestCase):
     
-    print('Running Test_StrikeFromDelta testing ')
     sfd = StrikeFromDelta(100, 0.01, 0.02, 1.0)
        
     def test_GetStrikeFromDomDelta(self):
