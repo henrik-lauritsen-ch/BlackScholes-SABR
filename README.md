@@ -108,6 +108,7 @@ Methods:
 Benaim/Dodgson/Kainth suggest ways of dealing with possible arbitrage on the smile and even an alternative solution. These topics have not been taken into account in this Python implementation.
 
 
+
 ## VisualizeVolatilitySurfaceFunctionality.py
 The purpose of this library is to show application of the different methods implemented for FX Options
 
