@@ -244,6 +244,11 @@ class TestBSMethods(unittest.TestCase):
     def test_GetDualGamma(self):
         self.assertEqual( round(self.bs.GetDualGamma(), 12), round(0.0454209823850242, 12))
 
+    def test_GetDualVega(self):
+        bs_dv = Vanilla(11.7336, 10.6283066245267, 180/365, 0.000901339, 0.056517435, 0.169934519201955)       
+        self.assertEqual(round(bs_dv.GetDualVega(), 12), round(1.33669386647298, 12))
+
+
 if __name__ == '__main__':
     unittest.main()
     
