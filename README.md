@@ -127,9 +127,12 @@ Implementation: Jan Obloj, Fine-Tune Your Smile Correction to Hagan et al
 
 
 ### ZAR/JPY SABRWing Calibration:
-Implementation: Jan Obloj + Benaim/Dodgson/Kainth (Wing extrapolation)
+Below we compare the Jan Obloj to the Benaim/Dodgson/Kainth (Wing extrapolation). The implied reisk neutral distribution have caclulated for all four interpolation methods. Obvious that piecewise linear interpolation leads to an unacceptable distribution function.
 
-![Smile](https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_ZARJPY_SE.png)
+
+![Smile](https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_ZARJPY_Wing.png)
+
+![Smile](https://github.com/henrik-lauritsen-ch/Pictures/blob/main/sabr_ZARJPY_PDF.png)
 
 
 
