@@ -28,9 +28,9 @@ class SABRWingSurface(vs.SABRVolSurface):
         self._bput = np.nan
         self._cput = np.nan
         
-        self._calibrationWeights = np.array([1.0, 2.0, 4.0, 2.0, 1.0])
+        self._calibrationWeights = np.array([0.15, 2.5, 4.0, 2.5, 0.15])
         self.SabrCalibration()
-        self.CalcWingParameters(self._strikes[0], self._strikes[1], self._strikes[4], self._strikes[3])
+        self.CalcWingParameters()
     
     
     def GetVolatilityFromSmile(self, strike, smile_vec):
@@ -38,7 +38,7 @@ class SABRWingSurface(vs.SABRVolSurface):
         if (smile_vec != self._volatilitySmile).any():
             self.SetVolatilitySmile(smile_vec)
             self.SabrCalibration()
-            self.CalcWingParameters(self._strikes[0], self._strikes[1], self._strikes[4], self._strikes[3])
+            self.CalcWingParameters()
                       
         if (strike < self._strikes[1] or strike > self._strikes[3]):            
             return self.GetImpliedWingVol(strike)
@@ -149,23 +149,7 @@ class SABRWingSurface(vs.SABRVolSurface):
         self._bs._volatility = volatility
         return (1/self._bs.GetOptionValue(optiontype)*(self._bs.GetDualDelta(optiontype) 
                                                       + self._bs.GetVega()*self.dSABRdK(strike, forward, alpha, corr, vovol, beta)))
-        
-        
-    # def GetTotaldlogBSdK_Disc(self, strike, volatility, optiontype, forward, alpha, corr, vovol, beta):
-    #     self._bs._strike = strike
-    #     self._bs._volatility = volatility        
-    #     logBS = m.log(self._bs.GetOptionValue(optiontype))
-    #     strike_i_1 = strike * 1.000000001
-    #     self._bs._strike = strike_i_1
-    #     vol_i_1 = self.GetVolatility(strike_i_1)
-    #     self._bs._volatility = vol_i_1
-    #     log_BS_i_1 = m.log(self._bs.GetOptionValue(optiontype))
-    #     return (logBS - log_BS_i_1)/(strike - strike_i_1)
-
-
-    def GetTotaldlogBSdlogK(self, strike, volatility, optiontype, forward, alpha, corr, vovol, beta):        
-        return self.GetTotaldlogBSdK(strike, volatility, optiontype, forward, alpha, corr, vovol, beta)*strike
-
+                
 
     def GetTotald2logBSdKdK(self, strike, volatility, optiontype, forward, alpha, corr, vovol, beta):
         
@@ -183,31 +167,16 @@ class SABRWingSurface(vs.SABRVolSurface):
         term1 = -pow(BS, -2)*pow(dBSdK + vega*dSABRdK, 2)
         term2 = 1/BS*(d2BSdKdK + dualvega*dSABRdK + (dualvega + volga*dSABRdK)*dSABRdK + vega*d2SABRdKdK)
         
-        return term1 + term2
+        return term1 + term2      
+    
        
-
-    # def GetTotald2logBSdKdK_disk(self, strike, volatility, optiontype, forward, alpha, corr, vovol, beta):
-                
-    #     self._bs._strike = strike
-    #     self._bs._volatility = volatility
-    #     BS = self._bs.GetOptionValue(optiontype)
-    #     strike_i = strike
-    #     strike_i_1 = strike*1.00001
-    #     delta = strike_i_1 - strike_i
-    #     strike_i_2 = strike_i_1 + delta
-    #     vol_i = volatility
-    #     vol_i_1 = self.GetVolatility(strike_i_1)
-    #     vol_i_2 = self.GetVolatility(strike_i_2)
+    def CalcWingParameters(self) -> None:
         
-    #     logBS_i = m.log(BS)
-    #     logBS_i_1 = m.log(self._bs.GetOptionValueSVO(strike_i_1, vol_i_1, bs.OptionType.Put))
-    #     logBS_i_2 = m.log(self._bs.GetOptionValueSVO(strike_i_2, vol_i_2, bs.OptionType.Put))
-        
-    #     return (logBS_i + logBS_i_2 - 2*logBS_i_1)/(delta*delta) 
-       
-       
-    def CalcWingParameters(self, K10P, K25P, K10C, K25C) -> None:
-        
+        K10P = self._strikes[0]
+        K25P = self._strikes[1]
+        K25C= self._strikes[3]
+        K10C = self._strikes[4]
+                        
         ##########################################
         #  Solve Put Wing
         ##########################################
@@ -238,24 +207,10 @@ class SABRWingSurface(vs.SABRVolSurface):
         self._aput = put_solution[1]
         self._bput = put_solution[2]
         self._cput = put_solution[3]
-        
-        # if (put_solution[0]>1):
-            
-        # else:
-        #     # Solve the alternative problem
-        #     self._my = self.GetTotaldlogBSdlogK(K25P, sabrvol25,bs.OptionType.Put, forward, self._alpha, self._corr, self._vovol, self._beta)
-        #     pm_new = put_matrix[:3,1:]
-        #     rhs_new = rhs[:3]
-        #     rhs_new[0] = rhs_new[0] - self._my*m.log(K25P)
-        #     rhs_new[1] = rhs_new[1] - self._my*1/K25P
-        #     rhs_new[2] = rhs_new[2] + self._my*1/(K25P*K25P)
-        #     ps_new = np.linalg.inv(pm_new)@rhs_new
-        #     self._aput = ps_new[0]
-        #     self._bput = ps_new[1]
-        #     self._cput = ps_new[2]
+                
         
         ##########################################
-        #  Solve the Call Wing
+        #  Solve Call Wing
         ##########################################
         call_matrix = np.array([[-m.log(K25C),   1,   pow(K25C, -1),    pow(K25C, -2)],
                                 [-pow(K25C, -1), 0,  -pow(K25C, -2), -2*pow(K25C, -3)],
@@ -287,48 +242,11 @@ class SABRWingSurface(vs.SABRVolSurface):
         
         pass
 
-import pandas as pd
-import VolatilitySurface as vs
-
-spot = 11.7336
-strike = 10
-expiryTerm = 180/365.0
-r = 0.000901339
-q = 0.056517435
-vol_smile = np.array([0.188, 0.172, 0.155, 0.148, 0.148])
-# vol_smile = np.array([0.09852, 0.09542, 0.0973,	0.10582, 0.11732])
-sabr = SABRWingSurface(spot, r, q, expiryTerm, vol_smile)
-sabr_plain = vs.SABRVolSurface(spot, r, q, expiryTerm,vol_smile)
-
-strike_vec = np.linspace(8.7, 14.1, 60)
-dt = pd.DataFrame(strike_vec, columns=['strike'])
-dt['sabr_wing_vol'] = dt.apply(lambda row: sabr.GetVolatility(row['strike']), axis=1)
-dt['sabr_vol'] = dt.apply(lambda row: sabr_plain.GetVolatility(row['strike']), axis=1)
-dt['Put_price'] = dt.apply(lambda row: sabr._bs.GetOptionValueSVO(row['strike'],row['sabr_vol'], bs.OptionType.Put), axis=1)
-# print(dt)
-# print(sabr._my)
-# print(sabr._volatilitySmile[0])
-# print(sabr.GetVolatility(strike), 'solution: ', strike)
-
-
-sabr.SetVolatilitySmile(vol_smile)
-sabr.SabrCalibration()
-sabr.CalcWingParameters(sabr._strikes[0], sabr._strikes[1], sabr._strikes[4], sabr._strikes[3])
-
-# dt['sabr_vol2'] = dt.apply(lambda row: sabr.GetVolatility(row['strike']), axis=1)
-# dt['Put_price2'] = dt.apply(lambda row: sabr._bs.GetOptionValueSVO(row['strike'],row['sabr_vol'], bs.OptionType.Put), axis=1)
-print(sabr._alpha, sabr._corr, sabr._vovol)
-print(sabr_plain._alpha, sabr_plain._corr, sabr_plain._vovol)
-print(dt)
-print(sabr._strikes)
-# print(sabr.GetVolatilityFromSmile(strike, vol_smile), 'solution: ', strike)
-
-# print(sabr._volatilitySmile[0])
-# print(sabr._my)
 
 #//     Unit-Test: SABR with wing extrapolation
 class Test_SABRWing(unittest.TestCase):
     
+    print('Running Test_SABRWing testing ')
     def test_dIdK(self):
         self.assertEqual(1.12345, 1.12345)
 
