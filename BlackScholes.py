@@ -60,7 +60,7 @@ class Vanilla(GarmanKohlhagen):
         if (optionType == OptionType.Put):
             sign = -1.0
         
-        return sign * (m.exp(-d * T) * s0 * u.norm().cdf(sign * d1) - m.exp(-r * T) * strike * u.norm().cdf(sign * d2))
+        return sign * (m.exp(-d * T) * s0 * u.Norm().cdf(sign * d1) - m.exp(-r * T) * strike * u.Norm().cdf(sign * d2))
 
     
     def GetBaseOptionValue(self, optionType: OptionType, volatility):        
@@ -96,7 +96,7 @@ class Vanilla(GarmanKohlhagen):
             sign = -1.0
     
         d1 = self.Getd1(self._volatility)
-        signPhi_d1 = u.norm().cdf(sign * d1)
+        signPhi_d1 = u.Norm().cdf(sign * d1)
 
         return sign * m.exp(-q * self._expiryTerm) * signPhi_d1
 
@@ -104,7 +104,7 @@ class Vanilla(GarmanKohlhagen):
     def GetGamma(self):
         retval = 0
         d1 = self.Getd1(self._volatility)
-        phi_d1 = u.norm().pdf(d1)
+        phi_d1 = u.Norm().pdf(d1)
         variance = self._volatility * self._volatility * self._expiryTerm
         rootVariance = m.sqrt(variance)
 
@@ -124,13 +124,13 @@ class Vanilla(GarmanKohlhagen):
         if (optiontype == OptionType.Put):
             sign = -1.0
         
-        return -sign*m.exp(-self._depositDomestic*self._expiryTerm)*u.norm().cdf(sign*d2)
+        return -sign*m.exp(-self._depositDomestic*self._expiryTerm)*u.Norm().cdf(sign*d2)
 
 
     def GetDualGamma(self):
         d2 = self.Getd2(self._volatility)
         try:
-            return m.exp(-self._depositDomestic*self._expiryTerm)*u.norm().pdf(d2)/(self._strike*self._volatility*m.sqrt(self._expiryTerm))
+            return m.exp(-self._depositDomestic*self._expiryTerm)*u.Norm().pdf(d2)/(self._strike*self._volatility*m.sqrt(self._expiryTerm))
         except:     
             raise ValueError('Divide with zero: GarmanKohlhagen->Vanilla->GetDualGamma')
     
@@ -139,13 +139,13 @@ class Vanilla(GarmanKohlhagen):
         
         # Dual Vega = dVega/dStrike
         d1 = self.Getd1(self._volatility)
-        return self._spot/self._strike*m.exp(-self._depositForeign*self._expiryTerm)*d1/self._volatility*u.norm().pdf(d1)
+        return self._spot/self._strike*m.exp(-self._depositForeign*self._expiryTerm)*d1/self._volatility*u.Norm().pdf(d1)
     
     
     def GetVega(self):
         
         d1 = self.Getd1(self._volatility)
-        phi_d1 = u.norm().pdf(d1)
+        phi_d1 = u.Norm().pdf(d1)
 
         if (self._expiryTerm > 0.0):
             return self._spot * m.exp(- self._depositForeign * self._expiryTerm) * m.sqrt(self._expiryTerm) * phi_d1
@@ -158,7 +158,7 @@ class Vanilla(GarmanKohlhagen):
         retval = 0
         d1 = self.Getd1(self._volatility)
         d2 = self.Getd2(self._volatility)
-        phi_d1 = u.norm().pdf(d1)
+        phi_d1 = u.Norm().pdf(d1)
 
         if (self._volatility > 0.0 and self._expiryTerm > 0.0):
             retval = self._spot / self._volatility * m.exp(- self._depositForeign * self._expiryTerm) * m.sqrt(self._expiryTerm) * d1 * d2 * phi_d1
@@ -172,7 +172,7 @@ class Vanilla(GarmanKohlhagen):
         retval = 0
         d1 = self.Getd1(self._volatility)
         d2 = self.Getd2(self._volatility)
-        phi_d1 = u.norm().pdf(d1)
+        phi_d1 = u.Norm().pdf(d1)
 
         if (self._volatility > 0.0 and self._expiryTerm > 0.0):
             retval = -m.exp(-self._depositForeign * self._expiryTerm) * d2 / self._volatility * phi_d1
@@ -194,9 +194,9 @@ class Vanilla(GarmanKohlhagen):
             d1 = self.Getd1(self._volatility)
             d2 = self.Getd2(self._volatility)
             
-            Phi_d1 = u.norm().cdf(sign * d1)
-            phi_d1 = u.norm().pdf(d1)
-            Phi_d2 = u.norm().cdf(sign * d2)
+            Phi_d1 = u.Norm().cdf(sign * d1)
+            phi_d1 = u.Norm().pdf(d1)
+            Phi_d2 = u.Norm().cdf(sign * d2)
 
             retval = (-self._spot * m.exp(-self._depositForeign * self._expiryTerm) * phi_d1 * self._volatility / (2 * m.sqrt(self._expiryTerm)) 
             + sign * self._depositForeign * self._spot * Phi_d1 * m.exp(-self._depositForeign * self._expiryTerm) 
