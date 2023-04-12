@@ -182,10 +182,10 @@ class SABRWingSurface(vs.SABRVolSurface):
         ##########################################
         forward = sfd.ForwardContinuousDeposit(self._spot, self._domesticDeposit, self._foreignDeposit, self._expiryTerm)
         
-        put_matrix = np.array([[m.log(K25P)   , 1, K25P, K25P*K25P],
-                               [1/K25P        , 0,    1,    2*K25P],
+        put_matrix = np.array([[   m.log(K25P), 1, K25P, K25P*K25P],
+                               [       1/K25P , 0,    1,    2*K25P],
                                [-1/(K25P*K25P), 0,    0,         2],
-                               [m.log(K10P)   , 1, K10P, K10P*K10P]])
+                               [   m.log(K10P), 1, K10P, K10P*K10P]])
                 
         self._bs._strike = K25P
         sabrvol25 = self.GetVolatility(K25P)
