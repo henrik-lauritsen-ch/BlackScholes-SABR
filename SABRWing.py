@@ -212,10 +212,10 @@ class SABRWingSurface(vs.SABRVolSurface):
         ##########################################
         #  Solve Call Wing
         ##########################################
-        call_matrix = np.array([[-m.log(K25C),   1,   pow(K25C, -1),    pow(K25C, -2)],
+        call_matrix = np.array([[  -m.log(K25C), 1,   pow(K25C, -1),    pow(K25C, -2)],
                                 [-pow(K25C, -1), 0,  -pow(K25C, -2), -2*pow(K25C, -3)],
                                 [ pow(K25C, -2), 0, 2*pow(K25C, -3),  6*pow(K25C, -4)],
-                                [-m.log(K10C),   1,   pow(K10C, -1),    pow(K10C, -2)]])
+                                [  -m.log(K10C), 1,   pow(K10C, -1),    pow(K10C, -2)]])
         
         self._bs._strike = K25C
         sabrvol25_call = self.GetVolatility(K25C)
