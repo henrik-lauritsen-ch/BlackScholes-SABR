@@ -29,11 +29,11 @@ class Constants:
 def RealAxisToIntervalAB(y, a, b):
 
     a1 = y
-    b1 = -(y * a + y * b + 1)
-    c1 = a * b * y + (a + b) / 2
+    b1 = -(y * a + y * b + 1.0)
+    c1 = a * b * y + (a + b) / 2.0
 
     if (y == 0.0):
-        retval = (a + b) / 2
+        retval = (a + b) / 2.0
     else:
         retval = SolutionToSecondDegreePolynomial(a1, b1, c1, False)
 
@@ -49,7 +49,7 @@ def IntervalABToRealAxis(x, a, b):
     elif (x == b):
         retval = sys.float_info.min
     else:
-        retval = (x - (a + b) / 2) / ((x - a) * (x - b))
+        retval = (x - (a + b) / 2.0) / ((x - a) * (x - b))
 
     return retval
 
@@ -59,15 +59,15 @@ def IntervalABToRealAxis(x, a, b):
 # If plussoltion is TRUE then solution x = (-b + sqrt(b^2 - 4*a*c))/(2*a) is returned
 def SolutionToSecondDegreePolynomial(a, b, c, plussolution = True):
 
-    if ((b * b - 4 * a * c) >= 0.0):
-        sqrtbb4ac = math.sqrt(b * b - 4 * a * c)
+    if ((b * b - 4.0 * a * c) >= 0.0):
+        sqrtbb4ac = math.sqrt(b * b - 4.0 * a * c)
     else:
         raise ValueError('No solution to second degree polynomial')
 
     if (plussolution == True):
-        retval = (-b + sqrtbb4ac) / (2 * a)
+        retval = (-b + sqrtbb4ac) / (2.0 * a)
     else:
-        retval = (-b - sqrtbb4ac) / (2 * a)
+        retval = (-b - sqrtbb4ac) / (2.0 * a)
 
     return retval
 
@@ -78,11 +78,11 @@ def bisection(func, x1, x2, x_accuracy, JMAX = 40):
     f = func(x1)
     fmid = func(x2)
         
-    if (f*fmid>0):
+    if (f*fmid>0.0):
         raise ValueError('No root in interval from min_x to max_x')
     
-    rtb = 0
-    if f<0:
+    rtb = 0.0
+    if f<0.0:
         dx, rtb = x2 - x1, x1
     else:
         dx, rtb = x1 - x2, x2        
@@ -111,7 +111,7 @@ class Norm:
 
     
     def pdf(self, x):
-        return Constants._OneOverRootTwoPi * math.exp(-x * x / 2)
+        return Constants._OneOverRootTwoPi * math.exp(-x * x / 2.0)
 
 
     def InfErf(self, x):
@@ -191,21 +191,21 @@ class Norm:
 
     def cdfM(self, x):
         retval = 0    
-        y = 1.0 / (1 + 0.2316419 * abs(x))
+        y = 1.0 / (1.0 + 0.2316419 * abs(x))
         z = 1.330274429 * math.pow(y, 5) - 1.821255978 * math.pow(y, 4) + 1.781477937 * math.pow(y, 3) - 0.356563782 * math.pow(y, 2) + 0.31938153 * y
-        nu = 1.0 - z / math.sqrt(2 * Constants._Pi) * math.exp(-math.pow(x, 2) / 2)
+        nu = 1.0 - z / math.sqrt(2.0 * Constants._Pi) * math.exp(-math.pow(x, 2) / 2.0)
 
         if (x > 0.0):
             retval = nu
         else:
-            retval = 1 - nu
+            retval = 1.0 - nu
 
         return retval
 
 
     def cdfI(self, x):
         SqrtTwo = Constants._SqrtTwo
-        tmp = 0.5 * (self.InfErf(x / SqrtTwo) + 1)
+        tmp = 0.5 * (self.InfErf(x / SqrtTwo) + 1.0)
         return tmp
 
 
@@ -242,9 +242,9 @@ class Norm:
         d4 = 3.75440866190742
 
         p_low = 0.02425
-        p_high = 1 - p_low
+        p_high = 1.0 - p_low
 
-        retval = 0
+        retval = 0.0
         if (x < 0 or x > 1):
             return 1.0
         elif (x < p_low):            
@@ -291,7 +291,7 @@ class Norm:
                     )
 
         x = u - 0.5
-        r = 0
+        r = 0.0
         
         if (abs(x) < 0.42):  # Beasley-Springer
             y = x * x
@@ -488,7 +488,7 @@ def g(x):
 class Test_Utility(unittest.TestCase):
         
     def test_Bisection(self):
-        self.assertEqual(round(bisection(g, 0, 7, 0.00000001) , 7), round(4.1234321, 7))
+        self.assertEqual(round(bisection(g, 0.0, 7.0, 0.00000001) , 7), round(4.1234321, 7))
 
     def test_ICdf(self):
         self.assertEqual(round(Norm().cdfI(2.134), 8), round(0.983578609590808, 8))
@@ -513,8 +513,8 @@ class Test_Utility(unittest.TestCase):
         self.assertEqual(round(cs.GetInterpolatedValue(11.9, xs, ys), 12), round(0.14239424307285, 12))
 
     def test_PieceviseLinear(self):
-        xa = np.array([2, 4.1, 7.3331, 9.998])
-        ya = np.array([10, 7, 5.6, 11.1])
+        xa = np.array([2.0, 4.1, 7.3331, 9.998])
+        ya = np.array([10.0, 7.0, 5.6, 11.1])
         pl = PiecewiseLinearInterpolation(True)
         self.assertEqual(pl.GetInterpolatedValue(1.1, xa, ya), 10)
         self.assertEqual(round(pl.GetInterpolatedValue(3.1, xa, ya), 14), 8.42857142857143)
