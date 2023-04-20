@@ -167,9 +167,9 @@ class SABRVolSurface(FXVolSurface):
 
     def SABRFirstGuess(self) -> None:
                 
-        if (self._expiryTerm <= 14/365):
+        if (self._expiryTerm <= 14.0/365.0):
             self._vovol0 = 5.0
-        elif (self._expiryTerm <= 31/365):
+        elif (self._expiryTerm <= 31.0/365.0):
             self._vovol0 = 2.0
         elif (self._expiryTerm <= 1.0):
             self._vovol0 = 1.0
