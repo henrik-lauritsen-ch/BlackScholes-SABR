@@ -73,24 +73,24 @@ class SABRWingSurface(vs.SABRVolSurface):
         x = self.GetI0x(strike, forward)
         
         if (forward == strike):
-            return alpha*(beta - 1)*pow(strike, beta - 2)
-        elif (vovol == 0):
-            den = pow(forward, 1 - beta) - pow(strike, 1 - beta)
-            return -1/strike*alpha*(1 - beta)/den + x*alpha*pow(1 - beta, 2)/pow(den, 2)*pow(strike, -beta)
+            return alpha*(beta - 1.0)*pow(strike, beta - 2.0)
+        elif (vovol == 0.0):
+            den = pow(forward, 1.0 - beta) - pow(strike, 1.0 - beta)
+            return -1.0/strike*alpha*(1.0 - beta)/den + x*alpha*pow(1.0 - beta, 2.0)/pow(den, 2.0)*pow(strike, -beta)
         else:
             dzdK = -vovol/alpha*pow(strike, -beta)
             z = self.GetI0z(strike, forward, alpha, vovol, beta)
-            sqrtzcorr = m.sqrt(1 - 2*corr*z + z*z) + z - corr
-            dlog_num = m.log(sqrtzcorr/(1 - corr))
+            sqrtzcorr = m.sqrt(1.0 - 2.0*corr*z + z*z) + z - corr
+            dlog_num = m.log(sqrtzcorr/(1.0 - corr))
         
             term1 = -(vovol/strike)*1/dlog_num
-            term2 = -(vovol*x)/pow(dlog_num, 2)*1/sqrtzcorr*(pow(1 - 2*corr*z + z*z, -1/2)*(z - corr)*dzdK + dzdK)
+            term2 = -(vovol*x)/pow(dlog_num, 2.0)*1.0/sqrtzcorr*(pow(1.0 - 2.0*corr*z + z*z, -1.0/2.0)*(z - corr)*dzdK + dzdK)
         
             return term1 + term2
         
         
     def dI1dK(self, strike, forward, alpha, corr, vovol, beta):        
-        return -(pow(1 - beta, 3)/24)*alpha*alpha/pow(forward*strike, 2 - beta)*forward - 1/8*alpha*beta*corr*vovol*(1 - beta)/pow(forward*strike, (3 - beta)/2)*forward
+        return -(pow(1.0 - beta, 3.0)/24.0)*alpha*alpha/pow(forward*strike, 2.0 - beta)*forward - 1.0/8.0*alpha*beta*corr*vovol*(1.0 - beta)/pow(forward*strike, (3.0 - beta)/2.0)*forward
 
 
     def d2I0dKdK(self, strike, forward, alpha, corr, vovol, beta):
@@ -98,56 +98,53 @@ class SABRWingSurface(vs.SABRVolSurface):
         x = self.GetI0x(strike, forward)
         
         if (forward == strike):
-            return alpha*(beta - 1)*(beta - 2)*pow(strike, beta - 3)
-        elif (vovol == 0):
-            frac =(1 - beta)/(pow(forward, 1 - beta) - pow(strike, 1 - beta))            
+            return alpha*(beta - 1.0)*(beta - 2.0)*pow(strike, beta - 3.0)
+        elif (vovol == 0.0):
+            frac =(1.0 - beta)/(pow(forward, 1.0 - beta) - pow(strike, 1.0 - beta))            
             
-            return (alpha*frac*pow(strike, -2) - 2*alpha*pow(frac, 2)*pow(strike, -(1 + beta))
-                    + 2*x*alpha*pow(frac, 3)*pow(strike, -2*beta) 
-                    - x*alpha*pow(frac, 2)*beta*pow(strike, -(1 + beta)))
+            return (alpha*frac*pow(strike, -2.0) - 2.0*alpha*pow(frac, 2.0)*pow(strike, -(1.0 + beta))
+                    + 2.0*x*alpha*pow(frac, 3.0)*pow(strike, -2.0*beta) 
+                    - x*alpha*pow(frac, 2.0)*beta*pow(strike, -(1.0 + beta)))
         else:            
             z = self.GetI0z(strike, forward, alpha, vovol, beta)
             dzdK = -vovol/alpha*pow(strike, -beta)
-            d2zdKdK = vovol/alpha*beta*pow(strike, -(1 + beta))            
-            sqrtzcorr = 1 - 2*corr*z + z*z
+            d2zdKdK = vovol/alpha*beta*pow(strike, -(1.0 + beta))            
+            sqrtzcorr = 1.0 - 2.0*corr*z + z*z
             sqrt_sqrtzcorr = m.sqrt(sqrtzcorr) + z - corr
-            log_num = m.log(sqrt_sqrtzcorr/(1 - corr))
-            dlog = 1/sqrt_sqrtzcorr*(pow(sqrtzcorr, -1/2)*(z - corr)*dzdK + dzdK)            
+            log_num = m.log(sqrt_sqrtzcorr/(1.0 - corr))
+            dlog = 1.0/sqrt_sqrtzcorr*(pow(sqrtzcorr, -1.0/2.0)*(z - corr)*dzdK + dzdK)            
             
-            term1 = vovol/log_num*pow(strike, -2) + vovol/strike*1/pow(log_num, 2)*dlog
-            term2 = (vovol/strike*pow(log_num, -2) + 2*vovol*x*pow(log_num, -3)*dlog)*1/sqrt_sqrtzcorr*(pow(sqrtzcorr, -1/2)*(z - corr)*dzdK + dzdK)
-            term31 = -pow(sqrt_sqrtzcorr, -2)*pow((pow(sqrtzcorr, -1/2)*(z - corr)*dzdK + dzdK), 2)
-            term32 = pow(sqrt_sqrtzcorr, -1)*(-pow(sqrtzcorr, -3/2)*pow((z - corr)*dzdK, 2) + pow(sqrtzcorr, -1/2)*(dzdK*dzdK + (z - corr)*d2zdKdK) + d2zdKdK)
-            term3 = -vovol*x*pow(log_num, -2)*(term31 + term32)
+            term1 = vovol/log_num*pow(strike, -2.0) + vovol/strike*1/pow(log_num, 2.0)*dlog
+            term2 = (vovol/strike*pow(log_num, -2.0) + 2.0*vovol*x*pow(log_num, -3.0)*dlog)*1.0/sqrt_sqrtzcorr*(pow(sqrtzcorr, -1.0/2.0)*(z - corr)*dzdK + dzdK)
+            term31 = -pow(sqrt_sqrtzcorr, -2.0)*pow((pow(sqrtzcorr, -1.0/2.0)*(z - corr)*dzdK + dzdK), 2.0)
+            term32 = pow(sqrt_sqrtzcorr, -1.0)*(-pow(sqrtzcorr, -3.0/2.0)*pow((z - corr)*dzdK, 2.0) + pow(sqrtzcorr, -1.0/2.0)*(dzdK*dzdK + (z - corr)*d2zdKdK) + d2zdKdK)
+            term3 = -vovol*x*pow(log_num, -2.0)*(term31 + term32)
             return term1 + term2 + term3
     
     
     def d2I1dKdK(self, strike, forward, alpha, corr, vovol, beta):
-        
-        term1 = (alpha*pow(1 - beta, 3)*(2 - beta)/24)*1/pow(forward*strike, 3 - beta)*forward*forward
-        term2 = (alpha*beta*corr*vovol*(1 - beta)*(3 - beta)/16)*1/pow(forward*strike, (5 - beta)/2)*forward*forward
-        
+        term1 = (alpha*pow(1.0 - beta, 3.0)*(2.0 - beta)/24.0)*1.0/pow(forward*strike, 3.0 - beta)*forward*forward
+        term2 = (alpha*beta*corr*vovol*(1.0 - beta)*(3.0 - beta)/16.0)*1.0/pow(forward*strike, (5.0 - beta)/2.0)*forward*forward        
         return term1  + term2
 
 
     def dSABRdK(self, strike, forward, alpha, corr, vovol, beta):
-        term1 = self.dI0dK(strike, forward, alpha, corr, vovol, beta)*(1 + self.I1_Hagan(strike, forward, alpha, corr, vovol, beta)*self._expiryTerm)
+        term1 = self.dI0dK(strike, forward, alpha, corr, vovol, beta)*(1.0 + self.I1_Hagan(strike, forward, alpha, corr, vovol, beta)*self._expiryTerm)
         term2 = self.I0_JObloj(strike, forward, alpha, corr, vovol, beta)*self.dI1dK(strike, forward, alpha, corr, vovol, beta)*self._expiryTerm
         return term1 + term2
 
 
     def d2SABRdKdK(self, strike, forward, alpha, corr, vovol, beta):
-        term1 = self.d2I0dKdK(strike, forward, alpha, corr, vovol, beta)*(1 + self.I1_Hagan(strike, forward, alpha, corr, vovol, beta)*self._expiryTerm)
-        term2 = 2*self.dI0dK(strike, forward, alpha, corr, vovol, beta)*self.dI1dK(strike, forward, alpha, corr, vovol, beta)*self._expiryTerm
-        term3 = self.I0_JObloj(strike, forward, alpha, corr, vovol, beta)*self.d2I1dKdK(strike, forward, alpha, corr, vovol, beta)*self._expiryTerm
-        
+        term1 = self.d2I0dKdK(strike, forward, alpha, corr, vovol, beta)*(1.0 + self.I1_Hagan(strike, forward, alpha, corr, vovol, beta)*self._expiryTerm)
+        term2 = 2.0*self.dI0dK(strike, forward, alpha, corr, vovol, beta)*self.dI1dK(strike, forward, alpha, corr, vovol, beta)*self._expiryTerm
+        term3 = self.I0_JObloj(strike, forward, alpha, corr, vovol, beta)*self.d2I1dKdK(strike, forward, alpha, corr, vovol, beta)*self._expiryTerm        
         return term1 + term2 + term3
 
     
     def GetTotaldlogBSdK(self, strike, volatility, optiontype, forward, alpha, corr, vovol, beta):
         self._bs._strike = strike
         self._bs._volatility = volatility
-        return (1/self._bs.GetOptionValue(optiontype)*(self._bs.GetDualDelta(optiontype) 
+        return (1.0/self._bs.GetOptionValue(optiontype)*(self._bs.GetDualDelta(optiontype) 
                                                       + self._bs.GetVega()*self.dSABRdK(strike, forward, alpha, corr, vovol, beta)))
                 
 
@@ -164,8 +161,8 @@ class SABRWingSurface(vs.SABRVolSurface):
         dSABRdK = self.dSABRdK(strike, forward, alpha, corr, vovol, beta)
         d2SABRdKdK = self.d2SABRdKdK(strike, forward, alpha, corr, vovol, beta)
                        
-        term1 = -pow(BS, -2)*pow(dBSdK + vega*dSABRdK, 2)
-        term2 = 1/BS*(d2BSdKdK + dualvega*dSABRdK + (dualvega + volga*dSABRdK)*dSABRdK + vega*d2SABRdKdK)
+        term1 = -pow(BS, -2.0)*pow(dBSdK + vega*dSABRdK, 2.0)
+        term2 = 1.0/BS*(d2BSdKdK + dualvega*dSABRdK + (dualvega + volga*dSABRdK)*dSABRdK + vega*d2SABRdKdK)
         
         return term1 + term2      
     
@@ -182,10 +179,10 @@ class SABRWingSurface(vs.SABRVolSurface):
         ##########################################
         forward = sfd.ForwardContinuousDeposit(self._spot, self._domesticDeposit, self._foreignDeposit, self._expiryTerm)
         
-        put_matrix = np.array([[   m.log(K25P), 1, K25P, K25P*K25P],
-                               [       1/K25P , 0,    1,    2*K25P],
-                               [-1/(K25P*K25P), 0,    0,         2],
-                               [   m.log(K10P), 1, K10P, K10P*K10P]])
+        put_matrix = np.array([[     m.log(K25P), 1.0,   K25P, K25P*K25P],
+                               [       1.0/K25P , 0.0,    1.0,  2.0*K25P],
+                               [-1.0/(K25P*K25P), 0.0,    0.0,       2.0],
+                               [     m.log(K10P), 1.0,   K10P, K10P*K10P]])
                 
         self._bs._strike = K25P
         sabrvol25 = self.GetVolatility(K25P)
@@ -212,10 +209,10 @@ class SABRWingSurface(vs.SABRVolSurface):
         ##########################################
         #  Solve Call Wing
         ##########################################
-        call_matrix = np.array([[  -m.log(K25C), 1,   pow(K25C, -1),    pow(K25C, -2)],
-                                [-pow(K25C, -1), 0,  -pow(K25C, -2), -2*pow(K25C, -3)],
-                                [ pow(K25C, -2), 0, 2*pow(K25C, -3),  6*pow(K25C, -4)],
-                                [  -m.log(K10C), 1,   pow(K10C, -1),    pow(K10C, -2)]])
+        call_matrix = np.array([[    -m.log(K25C), 1.0,     pow(K25C, -1.0),      pow(K25C, -2.0)],
+                                [-pow(K25C, -1.0), 0.0,    -pow(K25C, -2.0), -2.0*pow(K25C, -3.0)],
+                                [ pow(K25C, -2.0), 0.0, 2.0*pow(K25C, -3.0),  6.0*pow(K25C, -4.0)],
+                                [    -m.log(K10C), 1.0,     pow(K10C, -1.0),      pow(K10C, -2.0)]])
         
         self._bs._strike = K25C
         sabrvol25_call = self.GetVolatility(K25C)
