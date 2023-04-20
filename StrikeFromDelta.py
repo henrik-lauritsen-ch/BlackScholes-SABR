@@ -55,7 +55,7 @@ class StrikeFromDelta:
         norm_inverse = u.Norm().InverseCdf(z)
         forward = ForwardContinuousDeposit(self._spot, self._domesticDeposit, self._foreignDeposit, self._expiryTerm)
         
-        if (volatility>2):
+        if (volatility>2.0):
             raise ValueError('The volatility should be below 200%')
         
         return forward*math.exp(-sign*norm_inverse*volatility*math.sqrt(self._expiryTerm) + 0.5*volatility*volatility*self._expiryTerm)
@@ -99,7 +99,7 @@ class StrikeFromDelta:
 #//     Unit-Test: Volatility Surface
 class Test_StrikeFromDelta(unittest.TestCase):
     
-    sfd = StrikeFromDelta(100, 0.01, 0.02, 1.0)
+    sfd = StrikeFromDelta(100.0, 0.01, 0.02, 1.0)
        
     def test_GetStrikeFromDomDelta(self):
         self.assertEqual(round(self.sfd.GetStrikeFromDomesticDelta(0.23, bs.OptionType.Call, 0.12), 12), round(108.766767822761, 12))
@@ -108,7 +108,7 @@ class Test_StrikeFromDelta(unittest.TestCase):
         self.assertEqual(round(self.sfd.GetATMStrike(0.11), 10), round(99.6057790988489, 10))
 
     def test_GetForward(self):
-        self.assertEqual(round(ForwardContinuousDeposit(100, 0.01, 0.05, 0.7), 12), round(97.2388366801247, 12))
+        self.assertEqual(round(ForwardContinuousDeposit(100.0, 0.01, 0.05, 0.7), 12), round(97.2388366801247, 12))
 
     def test_GetStrikeVec(self):
         strikes = np.array([9.796265875871027, 10.067098505250692, 10.356101824110898, 10.687697656702378, 11.069582777590423])
