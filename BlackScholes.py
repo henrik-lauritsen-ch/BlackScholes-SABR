@@ -198,7 +198,7 @@ class Vanilla(GarmanKohlhagen):
             phi_d1 = u.Norm().pdf(d1)
             Phi_d2 = u.Norm().cdf(sign * d2)
 
-            retval = (-self._spot * m.exp(-self._depositForeign * self._expiryTerm) * phi_d1 * self._volatility / (2 * m.sqrt(self._expiryTerm)) 
+            retval = (-self._spot * m.exp(-self._depositForeign * self._expiryTerm) * phi_d1 * self._volatility / (2.0 * m.sqrt(self._expiryTerm)) 
             + sign * self._depositForeign * self._spot * Phi_d1 * m.exp(-self._depositForeign * self._expiryTerm) 
             - sign * self._depositDomestic * self._strike * m.exp(-self._depositDomestic * self._expiryTerm) * Phi_d2)
 
