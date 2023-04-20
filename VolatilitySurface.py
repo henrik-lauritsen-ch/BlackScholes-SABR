@@ -2,7 +2,6 @@
  FX Vanilla option tools: Strike From Delta, Forward
 
 """
-import BlackScholes as bs
 import math as m
 import Utility as u
 import unittest
@@ -93,7 +92,7 @@ class SABRVolSurface(FXVolSurface):
   
 
     def SabrImplVolFwd(self, strike, forward, alpha, corr, vovol, beta):
-        return self.I0_JObloj(strike, forward, alpha, corr, vovol, beta)*(1 + self.I1_Hagan(strike, forward, alpha, corr, vovol, beta)*self._expiryTerm)
+        return self.I0_JObloj(strike, forward, alpha, corr, vovol, beta)*(1.0 + self.I1_Hagan(strike, forward, alpha, corr, vovol, beta)*self._expiryTerm)
 
 
     def SabrImpliedVol(self, strike, alpha, corr, vovol, beta):  
@@ -107,12 +106,12 @@ class SABRVolSurface(FXVolSurface):
         x = self.GetI0x(strike, forward)        
         
         if (strike == forward):
-            retval = alpha * pow(strike, (beta - 1))
+            retval = alpha * pow(strike, (beta - 1.0))
         elif ((vovol == 0.0) and (beta != 1.0)):
-            retval = x * alpha * (1 - beta) / (pow(forward, (1 - beta)) - pow(strike, (1 - beta)))
+            retval = x * alpha * (1.0 - beta) / (pow(forward, (1.0 - beta)) - pow(strike, (1.0 - beta)))
         else:            
             z = self.GetI0z(strike, forward, alpha, vovol, beta)            
-            denominator = m.log((m.sqrt(1 - 2 * corr * z + z * z) + z - corr) / (1 - corr))
+            denominator = m.log((m.sqrt(1.0 - 2.0 * corr * z + z * z) + z - corr) / (1.0 - corr))
             retval = vovol * x / denominator
 
         return retval
@@ -125,7 +124,7 @@ class SABRVolSurface(FXVolSurface):
         if (beta == 1.0):
             z = vovol * x / alpha
         else:
-            z = (vovol / alpha) * (pow(forward, (1 - beta)) - pow(strike, (1 - beta)))/(1 - beta)
+            z = (vovol / alpha) * (pow(forward, (1.0 - beta)) - pow(strike, (1.0 - beta)))/(1.0 - beta)
 
         return z
     
@@ -141,9 +140,9 @@ class SABRVolSurface(FXVolSurface):
     # The I1_Hagan(), second term of the implied volatility formula (eq. 2.17a) in "Managing Smile Risk" by Hagan et. al
     def I1_Hagan(self, strike, forward, alpha, corr, vovol, beta):
         
-        return (pow((beta - 1), 2)/24 * pow(alpha, 2) / pow(forward * strike, 1 - beta) + 
-                1/4 * corr * vovol * alpha * beta / pow(forward * strike, (1 - beta)/2) + 
-                (2 - 3 * corr * corr) / 24 * vovol * vovol)
+        return (pow((beta - 1.0), 2.0)/24.0 * pow(alpha, 2.0) / pow(forward * strike, 1.0 - beta) + 
+                1.0/4.0 * corr * vovol * alpha * beta / pow(forward * strike, (1.0 - beta)/2.0) + 
+                (2.0 - 3.0 * corr * corr) / 24.0 * vovol * vovol)
 
 
     # This method established the differencence between the SABR implied vol and the ATM volatility for a given alpha    
@@ -169,9 +168,9 @@ class SABRVolSurface(FXVolSurface):
     def SABRFirstGuess(self) -> None:
                 
         if (self._expiryTerm <= 14/365):
-            self._vovol0 = 5
+            self._vovol0 = 5.0
         elif (self._expiryTerm <= 31/365):
-            self._vovol0 = 2
+            self._vovol0 = 2.0
         elif (self._expiryTerm <= 1.0):
             self._vovol0 = 1.0
         elif (self._expiryTerm <= 3.0):
@@ -188,7 +187,7 @@ class SABRVolSurface(FXVolSurface):
         self._alphamax = self._alpha0 * 1.2
                
         self._corr0=0
-        while (self._corr0==0):
+        while (self._corr0==0.0):
         
             try:                
                 self._corr0 = u.bisection(self.FirstGuessCorrelation, -0.9999, 0.99999, 0.00001, 10)                 
@@ -206,7 +205,7 @@ class SABRVolSurface(FXVolSurface):
 
     def SABRCalibObject(self, v):
         
-        s = 0
+        s = 0.0
         for i in range(5):
             
             sabrvol = self.SabrImpliedVol(self._strikes[i], u.RealAxisToIntervalAB(v[0], self._alphamin, self._alphamax),
