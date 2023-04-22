@@ -13,7 +13,13 @@ class OptionType(enum.Enum):
     Put = 1
     Call = 2
 
-
+class ExoticType(enum.Enum):
+    DownOut = 1
+    DownIn = 2
+    UpOut = 3
+    UpIn = 4
+    
+    
 class GarmanKohlhagen:
     def __init__(self, spot, strike, expiryTerm, depositDomestic, depositForeign, volatility):
         self._spot = spot
