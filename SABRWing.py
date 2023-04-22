@@ -200,10 +200,10 @@ class SABRWingSurface(vs.SABRVolSurface):
                         [logBS10P]])
         
         put_solution = np.linalg.inv(put_matrix)@rhs       
-        self._my = put_solution[0]
-        self._aput = put_solution[1]
-        self._bput = put_solution[2]
-        self._cput = put_solution[3]
+        self._my = put_solution[0][0]
+        self._aput = put_solution[1][0]
+        self._bput = put_solution[2][0]
+        self._cput = put_solution[3][0]
                 
         
         ##########################################
@@ -231,10 +231,10 @@ class SABRWingSurface(vs.SABRVolSurface):
                         [logBS10C]])
         
         call_solution = np.linalg.inv(call_matrix)@rhs_c
-        self._ny = call_solution[0]
-        self._acall = call_solution[1]
-        self._bcall = call_solution[2]
-        self._ccall = call_solution[3]
+        self._ny = call_solution[0][0]
+        self._acall = call_solution[1][0]
+        self._bcall = call_solution[2][0]
+        self._ccall = call_solution[3][0]
         
         
         pass
