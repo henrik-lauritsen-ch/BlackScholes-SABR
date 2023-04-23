@@ -26,7 +26,7 @@ def Thomas(a, b, c, r, M) -> None:
         r[i] = r[i] - a[i-1]*r[i-1]       
                 
         c[i] = c[i]/b[i]
-        r[i] = float(r[i]/b[i])        
+        r[i] = r[i]/b[i]        
            
     b[M-1] = b[M-1] - a[M-2]*c[M-2]
     r[M-1] = r[M-1] - a[M-2]*r[M-2]
