@@ -14,7 +14,8 @@ import unittest
 //      Numerical Partial Differential Equations, J.W. Thomas, Springer-Verlag
 //	-----------------------------------   ----------------   ----------------------------------- //
 """
-def Thomas(a, b, c, r, M):
+# import numpy as np
+def Thomas(a, b, c, r, M) -> None:
 
     c[0] = c[0]/b[0]
     r[0] = r[0]/b[0]
@@ -31,12 +32,13 @@ def Thomas(a, b, c, r, M):
     r[M-1] = r[M-1] - a[M-2]*r[M-2]
     
     #  Finding the solution vector going back up
+    # p = np.empty(M)
     r[M-1] = r[M-1]/b[M-1]
     
     for i in range(M-2, -1, -1):
         r[i] = r[i] - c[i]*r[i+1]    
         
-    return r
+    pass
 
 
 
@@ -49,10 +51,9 @@ class TestfdTools(unittest.TestCase):
         a_ = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 0.0])
         b_ = np.array([6.0, 4.0, 4.0, 4.0, 4.0, 4.0, 6.0])
         c_ = np.array([0.0, 1.0, 1.0, 1.0, 1.0, 1.0])
-        r_ = Thomas(a_, b_, c_, rhs_b, 7)        
-        r_ = np.round(r_, 7)
-        # print(np.linalg.matrix_rank(qa))
-        self.assertEqual((r_ == np.array([0.1666667, -0.0457265, 1.0162393, -2.0192308, 1.0606838, -0.2235043, 0.8333333])).all(), True)
+        Thomas(a_, b_, c_, rhs_b, 7)
+        rhs_b = np.round(rhs_b, 7)        
+        self.assertEqual((rhs_b == np.array([0.1666667, -0.0457265, 1.0162393, -2.0192308, 1.0606838, -0.2235043, 0.8333333])).all(), True)
 
 if __name__ == '__main__':
     unittest.main()
