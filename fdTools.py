@@ -40,19 +40,19 @@ def Thomas(a, b, c, r, M):
 
 
 
-
 #// Unit-Test: fdTools:
 import numpy as np
 class TestfdTools(unittest.TestCase):
     
     def test_ThomasAlgorithm(self):
-        r = np.array([-1.0, -4.0, -7.0])
-        a = np.array([2.0, 4.0])
-        b = np.array([1.0, 4.0, 1.0])
-        c = np.array([1.0, -1.0])
-        r_ = Thomas(a, b, c, r, 3)
-        self.assertEqual((r_ == np.array([0.5, -3.0/2.0, -1.0])).all(), True)
+        rhs_b = np.array([1.0, 1.0, 2.0, -6.0, 2.0, 1.0, 5.0])
+        a_ = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 0.0])
+        b_ = np.array([6.0, 4.0, 4.0, 4.0, 4.0, 4.0, 6.0])
+        c_ = np.array([0.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+        r_ = Thomas(a_, b_, c_, rhs_b, 7)        
+        r_ = np.round(r_, 7)
+        # print(np.linalg.matrix_rank(qa))
+        self.assertEqual((r_ == np.array([0.1666667, -0.0457265, 1.0162393, -2.0192308, 1.0606838, -0.2235043, 0.8333333])).all(), True)
 
-    
 if __name__ == '__main__':
     unittest.main()
