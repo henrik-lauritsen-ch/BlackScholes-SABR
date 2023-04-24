@@ -18,27 +18,26 @@ def Thomas(a, b, c, r, M) -> None:
 
     c[0] = c[0]/b[0]
     r[0] = r[0]/b[0]
-    
+
     for i in range(1, M-1, 1):
-    
+
         b[i] = b[i] - a[i-1]*c[i-1]
         r[i] = r[i] - a[i-1]*r[i-1]       
-                
+
         c[i] = c[i]/b[i]
         r[i] = r[i]/b[i]        
-           
+
     b[M-1] = b[M-1] - a[M-2]*c[M-2]
     r[M-1] = r[M-1] - a[M-2]*r[M-2]
-    
+
     #  Finding the solution vector going back up
     # p = np.empty(M)
     r[M-1] = r[M-1]/b[M-1]
-    
+
     for i in range(M-2, -1, -1):
         r[i] = r[i] - c[i]*r[i+1]    
-        
-    pass
 
+    pass
 
 
 #// Unit-Test: fdTools:
