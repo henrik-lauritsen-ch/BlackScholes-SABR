@@ -7,13 +7,14 @@ import BlackScholes as bs
 import numpy as np
 import fdTools as fdT
 
-
+ 
 class OptionPayOff:
     
-    def __init__(self, optionType, ) -> None:
+    def __init__(self, optionType, exoticType) -> None:
         pass
 
-
+    def PayOff(self):
+        pass
 
 class FiniteDifference2D:
     
