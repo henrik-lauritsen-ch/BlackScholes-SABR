@@ -56,7 +56,7 @@ Methods:
 
 ```
 class FXVolSurface: Volatility surface that contains a smile for one Maturity only 
-(10dput, 10dput, atm, 10dcall, 10dcall). Constructor takes Interpolation(). Class 
+(10dput, 25dput, atm, 25dcall, 10dcall). Constructor takes Interpolation(). Class 
 returns volatility given strike.
 
 class SABRVolSurface(FXVolSurface): SABR volatility Surface. Calibrates smile to SABR 
