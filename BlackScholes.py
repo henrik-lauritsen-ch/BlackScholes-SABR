@@ -12,12 +12,19 @@ import unittest
 class OptionType(enum.Enum):
     Put = 1
     Call = 2
+    
+    
+    
 
 class ExoticType(enum.Enum):
-    DownOut = 1
-    DownIn = 2
-    UpOut = 3
-    UpIn = 4
+    DownOutAm = 1
+    DownInAm = 2
+    UpOutAm = 3
+    UpInAm = 4
+    DownOutEu = 5
+    DownInEu = 6
+    UpOutEu = 7
+    UpInEu = 8
     
     
 class GarmanKohlhagen:
