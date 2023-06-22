@@ -1,6 +1,10 @@
 # BlackScholes-SABR
 Functionality to value FX options under Garman Kohlhagen and SABR
 
+<img src="https://github.com/henrik-lauritsen-ch/Pictures/blob/main/ClassDiagram.png" width=60% height=60%>
+
+
+
 
 ## BlackScholes.py
 
